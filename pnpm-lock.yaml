@@ -23,9 +23,6 @@ dependencies:
   last-run:
     specifier: ^1.1.0
     version: 1.1.1
-  object.defaults:
-    specifier: ^1.0.0
-    version: 1.1.0
   object.reduce:
     specifier: ^1.0.0
     version: 1.0.1
