@@ -7,6 +7,7 @@
 ### Internal changes
 
 - all tests rewrote to ESM (#3)
+- eslint removed (#6)
 
 ## 5.0.0
 
