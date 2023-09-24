@@ -3,6 +3,7 @@
 ## UNRELEASED
 
 - `undertaker` is inlined (#1)
+- removed unnecessary dependencies (#5)
 
 ### Internal changes
 
