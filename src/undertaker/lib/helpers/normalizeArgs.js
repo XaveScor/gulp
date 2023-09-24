@@ -2,8 +2,6 @@
 
 var assert = require('assert');
 
-var map = require('arr-map');
-var flatten = require('arr-flatten');
 var levenshtein = require('fast-levenshtein');
 
 function normalizeArgs(registry, args) {
@@ -24,10 +22,10 @@ function normalizeArgs(registry, args) {
     return fn;
   }
 
-  var flattenArgs = flatten(args);
+  var flattenArgs = [...args].flat(Infinity);
   assert(flattenArgs.length, 'One or more tasks should be combined using series or parallel');
 
-  return map(flattenArgs, getFunction);
+  return flattenArgs.map(task => getFunction(task));
 }
 
 function similarTasks(registry, queryTask) {

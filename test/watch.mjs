@@ -5,8 +5,6 @@ import path from 'node:path';
 import {fileURLToPath} from "node:url";
 
 const {default: expect} = await import('expect');
-const {default: rimraf} = await import('rimraf');
-const {default: mkdirp} = await import('mkdirp');
 const {default: gulp} = await import('../index.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -26,9 +24,15 @@ function updateTempFile(path) {
 }
 
 describe('gulp.watch()', function() {
-  beforeEach(rimraf.bind(null, outpath));
-  beforeEach(mkdirp.bind(null, outpath));
-  afterEach(rimraf.bind(null, outpath));
+  beforeEach(() => {
+    fs.rmSync(outpath, { recursive: true, force: true });
+  });
+  beforeEach(() => {
+    fs.mkdirSync(outpath, { recursive: true });
+  });
+  afterEach(() => {
+    fs.rmSync(outpath, { recursive: true, force: true });
+  });
 
   it('should call the function when file changes: no options', function(done) {
     var tempFile = path.join(outpath, 'watch-func.txt');
