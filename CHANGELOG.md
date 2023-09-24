@@ -4,6 +4,10 @@
 
 - `undertaker` is inlined (#1)
 
+### Internal changes
+
+- all tests rewrote to ESM (#3)
+
 ## 5.0.0
 
 ### Breaking changes

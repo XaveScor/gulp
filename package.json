@@ -28,7 +28,7 @@
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "mocha --async-only **/test/*.js"
+    "test": "mocha --async-only **/test/*.mjs"
   },
   "dependencies": {
     "glob-watcher": "^5.0.3",

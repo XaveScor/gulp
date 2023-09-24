@@ -1,10 +1,10 @@
-'use strict';
+import path from 'node:path';
+import {fileURLToPath} from "node:url";
 
-var path = require('path');
+const {default: expect} = await import('expect');
+const {default: gulp} = await import('../index.js');
 
-var expect = require('expect');
-
-var gulp = require('../');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('gulp.src()', function() {
   it('should return a stream', function(done) {

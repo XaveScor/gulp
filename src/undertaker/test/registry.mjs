@@ -1,12 +1,9 @@
-'use strict';
+const {default: expect} = await import('expect');
+const {default: DefaultRegistry} = await import('undertaker-registry');
+const {default: CommonRegistry} = await import('undertaker-common-tasks');
+const {default: MetadataRegistry} = await import('undertaker-task-metadata');
 
-var expect = require('expect');
-
-var Undertaker = require('../');
-
-var DefaultRegistry = require('undertaker-registry');
-var CommonRegistry = require('undertaker-common-tasks');
-var MetadataRegistry = require('undertaker-task-metadata');
+const {default: Undertaker} = await import('../index.js');
 
 function noop() {}
 

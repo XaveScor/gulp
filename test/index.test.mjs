@@ -1,8 +1,5 @@
-'use strict';
-
-var expect = require('expect');
-
-var gulp = require('../');
+const {default: expect} = await import('expect');
+const {default: gulp} = await import('../index.js');
 
 describe('gulp', function() {
 

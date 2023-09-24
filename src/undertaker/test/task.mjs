@@ -1,8 +1,6 @@
-'use strict';
+const {default: expect} = await import('expect');
 
-var expect = require('expect');
-
-var Undertaker = require('../');
+const {default: Undertaker} = await import('../index.js');
 
 function noop(done) {
   done();
