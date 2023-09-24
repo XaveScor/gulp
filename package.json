@@ -33,7 +33,6 @@
     "gulp-cli": "^2.2.0",
     "undertaker": "^1.2.1",
     "vinyl-fs": "^3.0.0",
-    "arr-map": "^2.0.0",
     "bach": "^1.0.0",
     "collection-map": "^1.0.0",
     "es6-weak-map": "^2.0.1",
