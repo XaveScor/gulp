@@ -35,7 +35,6 @@
     "vinyl-fs": "^3.0.0",
     "bach": "^1.0.0",
     "collection-map": "^1.0.0",
-    "es6-weak-map": "^2.0.1",
     "last-run": "^1.1.0",
     "object.defaults": "^1.0.0",
     "object.reduce": "^1.0.0",
