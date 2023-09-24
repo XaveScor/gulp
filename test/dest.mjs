@@ -1,12 +1,12 @@
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-var fs = require('fs');
-var path = require('path');
+const {default: expect} = await import('expect');
+const {default: rimraf} = await import('rimraf');
+const {default: gulp} = await import('../index.js');
 
-var expect = require('expect');
-var rimraf = require('rimraf');
-
-var gulp = require('../');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 var outpath = path.join(__dirname, './out-fixtures');
 

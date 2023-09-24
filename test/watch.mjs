@@ -1,15 +1,15 @@
-'use strict';
-
 /* eslint-disable no-use-before-define */
 
-var fs = require('fs');
-var path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from "node:url";
 
-var expect = require('expect');
-var rimraf = require('rimraf');
-var mkdirp = require('mkdirp');
+const {default: expect} = await import('expect');
+const {default: rimraf} = await import('rimraf');
+const {default: mkdirp} = await import('mkdirp');
+const {default: gulp} = await import('../index.js');
 
-var gulp = require('../');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 var outpath = path.join(__dirname, './out-fixtures');
 

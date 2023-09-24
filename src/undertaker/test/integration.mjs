@@ -1,19 +1,20 @@
-'use strict';
+import os from 'node:os';
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawn } from 'node:child_process';
+import {fileURLToPath} from "node:url";
 
-var expect = require('expect');
+const {default: expect} = await import('expect');
+const {default: vinyl} = await import('vinyl-fs');
+const {default: jshint} = await import('gulp-jshint');
+const {default: once} = await import('once');
+const {default: aOnce} = await import('async-once');
+const {default: del} = await import('del');
+const {default: through} = await import('through2');
 
-var os = require('os');
-var fs = require('fs');
-var path = require('path');
-var vinyl = require('vinyl-fs');
-var jshint = require('gulp-jshint');
-var spawn = require('child_process').spawn;
-var once = require('once');
-var aOnce = require('async-once');
-var del = require('del');
-var through = require('through2');
+const {default: Undertaker} = await import('../index.js');
 
-var Undertaker = require('../');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 var isWindows = (os.platform() === 'win32');
 

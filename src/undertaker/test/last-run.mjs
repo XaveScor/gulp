@@ -1,8 +1,6 @@
-'use strict';
+const {default: expect} = await import('expect');
 
-var expect = require('expect');
-
-var Undertaker = require('../');
+const {default: Undertaker} = await import('../index.js');
 
 describe('lastRun', function() {
   var taker, test1, test2, error, alias;

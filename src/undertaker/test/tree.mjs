@@ -1,15 +1,12 @@
-'use strict';
+const {default: expect} = await import('expect');
 
-var expect = require('expect');
-
-var Undertaker = require('../');
-
-var simple = require('./fixtures/taskTree/simple');
-var singleLevel = require('./fixtures/taskTree/singleLevel');
-var doubleLevel = require('./fixtures/taskTree/doubleLevel');
-var tripleLevel = require('./fixtures/taskTree/tripleLevel');
-var aliasSimple = require('./fixtures/taskTree/aliasSimple');
-var aliasNested = require('./fixtures/taskTree/aliasNested');
+const {default: Undertaker} = await import('../index.js');
+const {default: simple} = await import('./fixtures/taskTree/simple.js');
+const {default: singleLevel} = await import('./fixtures/taskTree/singleLevel.js');
+const {default: doubleLevel} = await import('./fixtures/taskTree/doubleLevel.js');
+const {default: tripleLevel} = await import('./fixtures/taskTree/tripleLevel.js');
+const {default: aliasSimple} = await import('./fixtures/taskTree/aliasSimple.js');
+const {default: aliasNested} = await import('./fixtures/taskTree/aliasNested.js');
 
 function noop(done) {
   done();
