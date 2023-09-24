@@ -26,8 +26,6 @@
     "gulp": "./bin/gulp.js"
   },
   "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
     "test": "mocha --async-only **/test/*.mjs"
   },
   "dependencies": {
@@ -47,8 +45,6 @@
     "fast-levenshtein": "^1.0.0"
   },
   "devDependencies": {
-    "eslint": "^2.13.1",
-    "eslint-config-gulp": "^3.0.1",
     "expect": "^1.20.2",
     "mkdirp": "^0.5.1",
     "mocha": "^10.2.0",
