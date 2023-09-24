@@ -1,13 +1,6 @@
 'use strict';
 
-var reduce = require('object.reduce');
-
 var validateRegistry = require('./helpers/validateRegistry');
-
-function setTasks(inst, task, name) {
-  inst.set(name, task);
-  return inst;
-}
 
 function registry(newRegistry) {
   if (!newRegistry) {
@@ -18,7 +11,13 @@ function registry(newRegistry) {
 
   var tasks = this._registry.tasks();
 
-  this._registry = reduce(tasks, setTasks, newRegistry);
+  this._registry = newRegistry;
+  for (let taskName in tasks) {
+    if (Object.hasOwn(tasks, taskName)) {
+      this._registry.set(taskName, tasks[taskName]);
+    }
+  }
+
   this._registry.init(this);
 }
 
