@@ -46,9 +46,6 @@ devDependencies:
   gulp-jshint:
     specifier: ^1.8.4
     version: 1.12.0
-  mkdirp:
-    specifier: ^0.5.1
-    version: 0.5.6
   mocha:
     specifier: ^10.2.0
     version: 10.2.0
@@ -2326,13 +2323,6 @@ packages:
       for-in: 1.0.2
       is-extendable: 1.0.1
     dev: false
-
-  /mkdirp@0.5.6:
-    resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
-    hasBin: true
-    dependencies:
-      minimist: 1.2.8
-    dev: true
 
   /mocha@10.2.0:
     resolution: {integrity: sha512-IDY7fl/BecMwFHzoqF2sg/SHHANeBoMMXFlS9r0OXKDssYE1M5O43wUY/9BVPeIvfH2zmEbBfseqN9gBQZzXkg==}
