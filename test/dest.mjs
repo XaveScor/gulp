@@ -3,7 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const {default: expect} = await import('expect');
-const {default: rimraf} = await import('rimraf');
 const {default: gulp} = await import('../index.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -11,8 +10,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 var outpath = path.join(__dirname, './out-fixtures');
 
 describe('gulp.dest()', function() {
-  beforeEach(rimraf.bind(null, outpath));
-  afterEach(rimraf.bind(null, outpath));
+  beforeEach(() => {
+    fs.rmSync(outpath, { recursive: true, force: true });
+  });
+  afterEach(() => {
+    fs.rmSync(outpath, { recursive: true, force: true });
+  });
 
   it('should return a stream', function(done) {
     var stream = gulp.dest(path.join(__dirname, './fixtures/'));

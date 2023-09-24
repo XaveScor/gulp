@@ -42,7 +42,6 @@
   "devDependencies": {
     "expect": "^1.20.2",
     "mocha": "^10.2.0",
-    "rimraf": "^2.6.3",
     "async-once": "^1.0.0",
     "del": "^2.0.2",
     "gulp-jshint": "^1.8.4",
