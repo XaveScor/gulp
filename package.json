@@ -35,7 +35,6 @@
     "glob-watcher": "^5.0.3",
     "gulp-cli": "^2.2.0",
     "last-run": "^1.1.0",
-    "undertaker": "^1.2.1",
     "undertaker-registry": "^1.0.0",
     "vinyl-fs": "^3.0.0"
   },
