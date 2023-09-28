@@ -1,6 +1,5 @@
 const assert = require('assert');
 
-const map = require('arr-map');
 const forEach = require('array-each');
 
 function noop() {}
@@ -32,17 +31,11 @@ function buildOnSettled(done) {
     const settledErrors = result.filter(filterError);
     const settledResults = result.filter(filterSuccess);
 
-    let errors = null;
-    if (settledErrors.length) {
-      errors = map(settledErrors, 'value');
-    }
 
-    let results = null;
-    if (settledResults.length) {
-      results = map(settledResults, 'value');
-    }
+    const errors = settledErrors.map(e => e.value);
+    const results = settledResults.map(r => r.value);
 
-    done(errors, results);
+    done(errors.length ? errors : null, results.length ? results : null);
   }
 
   return onSettled;
