@@ -36,7 +36,6 @@
     "last-run": "^1.1.0",
     "undertaker-registry": "^1.0.0",
     "vinyl-fs": "^3.0.0",
-    "array-initial": "^1.0.0",
     "async-done": "^1.2.2",
     "async-settle": "^1.0.0",
     "now-and-later": "^2.0.0"

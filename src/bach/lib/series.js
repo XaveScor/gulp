@@ -1,4 +1,3 @@
-const initial = require('array-initial');
 const asyncDone = require('async-done');
 const nowAndLater = require('now-and-later');
 
@@ -14,7 +13,7 @@ function buildSeries() {
   const extensions = helpers.getExtensions(lastEl);
 
   if (extensions) {
-    args = initial(args);
+    args = args.slice(0, args.length - 1);
   }
 
   function series(done) {
