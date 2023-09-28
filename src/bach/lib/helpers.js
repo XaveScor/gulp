@@ -1,7 +1,5 @@
 const assert = require('assert');
 
-const forEach = require('array-each');
-
 function noop() {}
 
 function getExtensions(lastArg) {
@@ -47,21 +45,22 @@ function verifyArguments(args) {
 
   assert.ok(args.length, 'A set of functions to combine is required');
 
-  forEach(args, function(arg, argIdx) {
+  for(let argIdx = 0; argIdx < args.length; argIdx++) {
+    const arg = args[argIdx];
     const isFunction = typeof arg === 'function';
     if (isFunction) {
-      return;
+      continue;
     }
 
     if (argIdx === lastIdx) {
       // Last arg can be an object of extension points
-      return;
+      continue;
     }
 
     const msg = 'Only functions can be combined, got ' + typeof arg +
       ' for argument ' + argIdx;
     assert.ok(isFunction, msg);
-  });
+  }
 
   return args;
 }
