@@ -36,7 +36,6 @@
     "last-run": "^1.1.0",
     "undertaker-registry": "^1.0.0",
     "vinyl-fs": "^3.0.0",
-    "arr-flatten": "^1.0.1",
     "arr-map": "^2.0.0",
     "array-each": "^1.0.0",
     "array-initial": "^1.0.0",

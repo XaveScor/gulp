@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  arr-flatten:
-    specifier: ^1.0.1
-    version: 1.1.0
   arr-map:
     specifier: ^2.0.0
     version: 2.0.2

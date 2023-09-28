@@ -1,7 +1,6 @@
 const assert = require('assert');
 
 const map = require('arr-map');
-const flatten = require('arr-flatten');
 const forEach = require('array-each');
 
 function noop() {}
@@ -50,7 +49,7 @@ function buildOnSettled(done) {
 }
 
 function verifyArguments(args) {
-  args = flatten(args);
+  args = [...args].flat(Infinity);
   const lastIdx = args.length - 1;
 
   assert.ok(args.length, 'A set of functions to combine is required');
