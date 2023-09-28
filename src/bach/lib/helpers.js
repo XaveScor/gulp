@@ -1,11 +1,9 @@
-'use strict';
+const assert = require('assert');
 
-var assert = require('assert');
-
-var filter = require('arr-filter');
-var map = require('arr-map');
-var flatten = require('arr-flatten');
-var forEach = require('array-each');
+const filter = require('arr-filter');
+const map = require('arr-map');
+const flatten = require('arr-flatten');
+const forEach = require('array-each');
 
 function noop() {}
 
@@ -33,15 +31,15 @@ function buildOnSettled(done) {
       return done(error, null);
     }
 
-    var settledErrors = filter(result, filterError);
-    var settledResults = filter(result, filterSuccess);
+    const settledErrors = filter(result, filterError);
+    const settledResults = filter(result, filterSuccess);
 
-    var errors = null;
+    let errors = null;
     if (settledErrors.length) {
       errors = map(settledErrors, 'value');
     }
 
-    var results = null;
+    let results = null;
     if (settledResults.length) {
       results = map(settledResults, 'value');
     }
@@ -54,12 +52,12 @@ function buildOnSettled(done) {
 
 function verifyArguments(args) {
   args = flatten(args);
-  var lastIdx = args.length - 1;
+  const lastIdx = args.length - 1;
 
   assert.ok(args.length, 'A set of functions to combine is required');
 
   forEach(args, function(arg, argIdx) {
-    var isFunction = typeof arg === 'function';
+    const isFunction = typeof arg === 'function';
     if (isFunction) {
       return;
     }
@@ -69,7 +67,7 @@ function verifyArguments(args) {
       return;
     }
 
-    var msg = 'Only functions can be combined, got ' + typeof arg +
+    const msg = 'Only functions can be combined, got ' + typeof arg +
       ' for argument ' + argIdx;
     assert.ok(isFunction, msg);
   });
