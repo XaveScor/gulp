@@ -1,6 +1,5 @@
 const assert = require('assert');
 
-const filter = require('arr-filter');
 const map = require('arr-map');
 const flatten = require('arr-flatten');
 const forEach = require('array-each');
@@ -31,8 +30,8 @@ function buildOnSettled(done) {
       return done(error, null);
     }
 
-    const settledErrors = filter(result, filterError);
-    const settledResults = filter(result, filterSuccess);
+    const settledErrors = result.filter(filterError);
+    const settledResults = result.filter(filterSuccess);
 
     let errors = null;
     if (settledErrors.length) {

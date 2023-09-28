@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  arr-filter:
-    specifier: ^1.1.1
-    version: 1.1.2
   arr-flatten:
     specifier: ^1.0.1
     version: 1.1.0
@@ -187,13 +184,6 @@ packages:
   /arr-diff@4.0.0:
     resolution: {integrity: sha512-YVIQ82gZPGBebQV/a8dar4AitzCQs0jjXwMPZllpXMaGjXPYVUawSxQrRsjhjupyVxEvbHgUmIhKVlND+j02kA==}
     engines: {node: '>=0.10.0'}
-    dev: false
-
-  /arr-filter@1.1.2:
-    resolution: {integrity: sha512-A2BETWCqhsecSvCkWAeVBFLH6sXEUGASuzkpjL3GR1SlL/PWL6M3J8EAAld2Uubmh39tvkJTqC9LeLHCUKmFXA==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      make-iterator: 1.0.1
     dev: false
 
   /arr-flatten@1.1.0:
