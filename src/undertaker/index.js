@@ -1,5 +1,5 @@
 const EventEmitter = require('events').EventEmitter;
-const bach = require('bach');
+const bach = require('../bach/index.js');
 const DefaultRegistry = require('undertaker-registry');
 
 const metadata = require('./metadata');
