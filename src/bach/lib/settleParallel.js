@@ -1,5 +1,4 @@
 const initial = require('array-initial');
-const last = require('array-last');
 const asyncSettle = require('async-settle');
 const nowAndLater = require('now-and-later');
 
@@ -11,8 +10,8 @@ function iterator(fn, key, cb) {
 
 function buildSettleParallel() {
   let args = helpers.verifyArguments(arguments);
-
-  const extensions = helpers.getExtensions(last(args));
+  const lastEl = args.length === 0 ? null : args[args.length - 1];
+  const extensions = helpers.getExtensions(lastEl);
 
   if (extensions) {
     args = initial(args);
