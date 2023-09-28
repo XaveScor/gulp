@@ -5,9 +5,30 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  bach:
+  arr-filter:
+    specifier: ^1.1.1
+    version: 1.1.2
+  arr-flatten:
+    specifier: ^1.0.1
+    version: 1.1.0
+  arr-map:
+    specifier: ^2.0.0
+    version: 2.0.2
+  array-each:
     specifier: ^1.0.0
-    version: 1.2.0
+    version: 1.0.1
+  array-initial:
+    specifier: ^1.0.0
+    version: 1.1.0
+  array-last:
+    specifier: ^1.1.1
+    version: 1.3.0
+  async-done:
+    specifier: ^1.2.2
+    version: 1.3.2
+  async-settle:
+    specifier: ^1.0.0
+    version: 1.0.0
   collection-map:
     specifier: ^1.0.0
     version: 1.0.0
@@ -23,6 +44,9 @@ dependencies:
   last-run:
     specifier: ^1.1.0
     version: 1.1.1
+  now-and-later:
+    specifier: ^2.0.0
+    version: 2.0.1
   undertaker-registry:
     specifier: ^1.0.0
     version: 1.0.1
@@ -306,21 +330,6 @@ packages:
     resolution: {integrity: sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==}
     engines: {node: '>= 0.4'}
     dev: true
-
-  /bach@1.2.0:
-    resolution: {integrity: sha512-bZOOfCb3gXBXbTFXq3OZtGR88LwGeJvzu6szttaIzymOTS4ZttBNOWSv7aLZja2EMycKtRYV0Oa8SNKH/zkxvg==}
-    engines: {node: '>= 0.10'}
-    dependencies:
-      arr-filter: 1.1.2
-      arr-flatten: 1.1.0
-      arr-map: 2.0.2
-      array-each: 1.0.1
-      array-initial: 1.1.0
-      array-last: 1.3.0
-      async-done: 1.3.2
-      async-settle: 1.0.0
-      now-and-later: 2.0.1
-    dev: false
 
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
