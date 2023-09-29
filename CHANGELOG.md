@@ -7,6 +7,7 @@
 
 ### Internal changes
 
+- all sources rewrote to ES6 (#25, #23, #16)
 - all tests rewrote to ESM (#3)
 - eslint removed (#6)
 
