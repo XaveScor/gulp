@@ -12,7 +12,7 @@ const validateRegistry = require('./validateRegistry');
 const assert = require('assert');
 
 class Undertaker extends EventEmitter {
-  constructor(customRegistry) {
+  constructor(customRegistry = null) {
     super();
 
     this._registry = new DefaultRegistry();
