@@ -1,14 +1,12 @@
-'use strict';
+const captureLastRun = require('last-run').capture;
+const releaseLastRun = require('last-run').release;
 
-var captureLastRun = require('last-run').capture;
-var releaseLastRun = require('last-run').release;
+const metadata = require('./metadata');
 
-var metadata = require('./metadata');
-
-var uid = 0;
+let uid = 0;
 
 function Storage(fn) {
-  var meta = metadata.get(fn);
+  const meta = metadata.get(fn);
 
   this.fn = meta.orig || fn;
   this.uid = uid++;
@@ -18,20 +16,20 @@ function Storage(fn) {
   this.startHr = [];
 }
 
-Storage.prototype.capture = function() {
+Storage.prototype.capture = function () {
   captureLastRun(this.fn, this.captureTime);
 };
 
-Storage.prototype.release = function() {
+Storage.prototype.release = function () {
   releaseLastRun(this.fn);
 };
 
 function createExtensions(ee) {
   return {
-    create: function(fn) {
+    create: function (fn) {
       return new Storage(fn);
     },
-    before: function(storage) {
+    before: function (storage) {
       storage.startHr = process.hrtime();
       ee.emit('start', {
         uid: storage.uid,
@@ -40,7 +38,7 @@ function createExtensions(ee) {
         time: Date.now(),
       });
     },
-    after: function(result, storage) {
+    after: function (result, storage) {
       if (result && result.state === 'error') {
         return this.error(result.value, storage);
       }
@@ -53,7 +51,7 @@ function createExtensions(ee) {
         time: Date.now(),
       });
     },
-    error: function(error, storage) {
+    error: function (error, storage) {
       if (Array.isArray(error)) {
         error = error[0];
       }

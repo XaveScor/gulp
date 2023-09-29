@@ -1,6 +1,4 @@
-'use strict';
-
-var assert = require('assert');
+const assert = require('assert');
 
 function isFunction(fn) {
   return typeof fn === 'function';
@@ -11,10 +9,10 @@ function isConstructor(registry) {
     return false;
   }
 
-  var hasProtoGet = isFunction(registry.prototype.get);
-  var hasProtoSet = isFunction(registry.prototype.set);
-  var hasProtoInit = isFunction(registry.prototype.init);
-  var hasProtoTasks = isFunction(registry.prototype.tasks);
+  const hasProtoGet = isFunction(registry.prototype.get);
+  const hasProtoSet = isFunction(registry.prototype.set);
+  const hasProtoInit = isFunction(registry.prototype.init);
+  const hasProtoTasks = isFunction(registry.prototype.tasks);
 
   if (hasProtoGet || hasProtoSet || hasProtoInit || hasProtoTasks) {
     return true;

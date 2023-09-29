@@ -2,19 +2,19 @@ import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
-import {fileURLToPath} from "node:url";
+import { fileURLToPath } from 'node:url';
 
-const {default: expect} = await import('expect');
-const {default: vinyl} = await import('vinyl-fs');
-const {default: jshint} = await import('gulp-jshint');
-const {default: through} = await import('through2');
-const {default: sinon} = await import('sinon');
+const { default: expect } = await import('expect');
+const { default: vinyl } = await import('vinyl-fs');
+const { default: jshint } = await import('gulp-jshint');
+const { default: through } = await import('through2');
+const { default: sinon } = await import('sinon');
 
-const {default: Undertaker} = await import('../index.js');
+const { default: Undertaker } = await import('../index.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-var isWindows = (os.platform() === 'win32');
+var isWindows = os.platform() === 'win32';
 
 function cleanup() {
   const dirs = ['./fixtures/out/', './fixtures/tmp/'];
@@ -26,13 +26,12 @@ function cleanup() {
   }
 }
 
-function noop() { }
+function noop() {}
 
-describe('integrations', function() {
-
+describe('integrations', function () {
   var taker;
 
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     taker = new Undertaker();
     done();
   });
@@ -40,34 +39,32 @@ describe('integrations', function() {
   beforeEach(cleanup);
   afterEach(cleanup);
 
-  it('should handle vinyl streams', function(done) {
-    taker.task('test', function() {
-      return vinyl.src('./fixtures/test.js', { cwd: __dirname })
-        .pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
+  it('should handle vinyl streams', function (done) {
+    taker.task('test', function () {
+      return vinyl.src('./fixtures/test.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
     });
 
     taker.parallel('test')(done);
   });
 
-  it('should exhaust vinyl streams', function(done) {
-    taker.task('test', function() {
+  it('should exhaust vinyl streams', function (done) {
+    taker.task('test', function () {
       return vinyl.src('./fixtures/test.js', { cwd: __dirname });
     });
 
     taker.parallel('test')(done);
   });
 
-  it('should lints all piped files', function(done) {
-    taker.task('test', function() {
-      return vinyl.src('./fixtures/test.js', { cwd: __dirname })
-        .pipe(jshint());
+  it('should lints all piped files', function (done) {
+    taker.task('test', function () {
+      return vinyl.src('./fixtures/test.js', { cwd: __dirname }).pipe(jshint());
     });
 
     taker.parallel('test')(done);
   });
 
-  it('should handle a child process return', function(done) {
-    taker.task('test', function() {
+  it('should handle a child process return', function (done) {
+    taker.task('test', function () {
       if (isWindows) {
         return spawn('cmd', ['/c', 'dir']).on('error', noop);
       }
@@ -79,30 +76,33 @@ describe('integrations', function() {
   });
 
   // it was skipped with `once` function before. But the behavior is broken. The `clean` function didn't call once
-  it.skip('should run dependencies once', function(done) {
+  it.skip('should run dependencies once', function (done) {
     const fn = sinon.fake();
 
     taker.task('clean', fn);
 
-    taker.task('build-this', taker.series('clean', function(cb) {
-      cb();
-    }));
-    taker.task('build-that', taker.series('clean', function(cb) {
-      cb();
-    }));
-    taker.task('build', taker.series(
-      'clean',
-      taker.parallel(['build-this', 'build-that'])
-    ));
+    taker.task(
+      'build-this',
+      taker.series('clean', function (cb) {
+        cb();
+      }),
+    );
+    taker.task(
+      'build-that',
+      taker.series('clean', function (cb) {
+        cb();
+      }),
+    );
+    taker.task('build', taker.series('clean', taker.parallel(['build-this', 'build-that'])));
 
-    taker.parallel('build')(function(err) {
+    taker.parallel('build')(function (err) {
       expect(fn.callCount).toEqual(1);
       done(err);
     });
   });
 
   // it was skipped with `once` function before. But the behavior is broken. The `clean` function didn't call once
-  it.skip('should run dependencies once', function(done) {
+  it.skip('should run dependencies once', function (done) {
     const fn = sinon.fake();
 
     taker.task('clean', (cb) => {
@@ -110,31 +110,33 @@ describe('integrations', function() {
       cb();
     });
 
-    taker.task('build-this', taker.series('clean', function(cb) {
-      cb();
-    }));
-    taker.task('build-that', taker.series('clean', function(cb) {
-      cb();
-    }));
-    taker.task('build', taker.series(
-      'clean',
-      taker.parallel(['build-this', 'build-that'])
-    ));
+    taker.task(
+      'build-this',
+      taker.series('clean', function (cb) {
+        cb();
+      }),
+    );
+    taker.task(
+      'build-that',
+      taker.series('clean', function (cb) {
+        cb();
+      }),
+    );
+    taker.task('build', taker.series('clean', taker.parallel(['build-this', 'build-that'])));
 
-    taker.parallel('build')(function(err) {
+    taker.parallel('build')(function (err) {
       expect(fn.callCount).toEqual(1);
       done(err);
     });
   });
 
-  it('can use lastRun with vinyl.src `since` option', function(done) {
+  it('can use lastRun with vinyl.src `since` option', function (done) {
     this.timeout(5000);
 
     var count = 0;
 
     function setup() {
-      return vinyl.src('./fixtures/test*.js', { cwd: __dirname })
-        .pipe(vinyl.dest('./fixtures/tmp', { cwd: __dirname }));
+      return vinyl.src('./fixtures/test*.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/tmp', { cwd: __dirname }));
     }
 
     function delay(cb) {
@@ -142,9 +144,8 @@ describe('integrations', function() {
     }
 
     // Some built
-    taker.task('build', function() {
-      return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname })
-        .pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
+    taker.task('build', function () {
+      return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
     });
 
     function userEdit(cb) {
@@ -152,14 +153,22 @@ describe('integrations', function() {
     }
 
     function countEditedFiles() {
-      return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname, since: taker.lastRun('build') })
-        .pipe(through.obj(function(file, enc, cb) {
+      return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname, since: taker.lastRun('build') }).pipe(
+        through.obj(function (file, enc, cb) {
           count++;
           cb();
-        }));
+        }),
+      );
     }
 
-    taker.series(setup, delay, 'build', delay, userEdit, countEditedFiles)(function(err) {
+    taker.series(
+      setup,
+      delay,
+      'build',
+      delay,
+      userEdit,
+      countEditedFiles,
+    )(function (err) {
       expect(count).toEqual(1);
       done(err);
     });

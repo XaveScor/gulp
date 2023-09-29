@@ -1,8 +1,8 @@
 'use strict';
 
-var assert = require('assert');
+const assert = require('assert');
 
-var levenshtein = require('fast-levenshtein');
+const levenshtein = require('fast-levenshtein');
 
 function normalizeArgs(registry, args) {
   function getFunction(task) {
@@ -10,9 +10,9 @@ function normalizeArgs(registry, args) {
       return task;
     }
 
-    var fn = registry.get(task);
+    const fn = registry.get(task);
     if (!fn) {
-      var similar = similarTasks(registry, task);
+      const similar = similarTasks(registry, task);
       if (similar.length > 0) {
         assert(false, 'Task never defined: ' + task + ' - did you mean? ' + similar.join(', '));
       } else {
@@ -22,10 +22,10 @@ function normalizeArgs(registry, args) {
     return fn;
   }
 
-  var flattenArgs = [...args].flat(Infinity);
+  const flattenArgs = [...args].flat(Infinity);
   assert(flattenArgs.length, 'One or more tasks should be combined using series or parallel');
 
-  return flattenArgs.map(task => getFunction(task));
+  return flattenArgs.map((task) => getFunction(task));
 }
 
 function similarTasks(registry, queryTask) {
@@ -33,12 +33,12 @@ function similarTasks(registry, queryTask) {
     return [];
   }
 
-  var tasks = registry.tasks();
-  var similarTasks = [];
-  for (var task in tasks) {
+  const tasks = registry.tasks();
+  const similarTasks = [];
+  for (let task in tasks) {
     if (tasks.hasOwnProperty(task)) {
-      var distance = levenshtein.get(task, queryTask);
-      var allowedDistance = Math.floor(0.4 * task.length) + 1;
+      const distance = levenshtein.get(task, queryTask);
+      const allowedDistance = Math.floor(0.4 * task.length) + 1;
       if (distance < allowedDistance) {
         similarTasks.push(task);
       }
