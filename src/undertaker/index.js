@@ -6,10 +6,10 @@ const metadata = require('./metadata');
 const buildTree = require('./buildTree');
 const normalizeArgs = require('./normalizeArgs');
 const createExtensions = require('./createExtensions');
-const map = require("collection-map");
-const retrieveLastRun = require("last-run");
-const validateRegistry = require("./validateRegistry");
-const assert = require("assert");
+const map = require('collection-map');
+const retrieveLastRun = require('last-run');
+const validateRegistry = require('./validateRegistry');
+const assert = require('assert');
 
 class Undertaker extends EventEmitter {
   constructor(customRegistry) {
@@ -20,7 +20,7 @@ class Undertaker extends EventEmitter {
       this.registry(customRegistry);
     }
 
-    this._settle = (process.env.UNDERTAKER_SETTLE === 'true');
+    this._settle = process.env.UNDERTAKER_SETTLE === 'true';
   }
 
   tree(opts = {}) {
@@ -30,7 +30,7 @@ class Undertaker extends EventEmitter {
     };
 
     const tasks = this._registry.tasks();
-    const nodes = map(tasks, function(task) {
+    const nodes = map(tasks, function (task) {
       const meta = metadata.get(task);
 
       if (opts.deep) {

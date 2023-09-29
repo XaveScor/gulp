@@ -1,18 +1,17 @@
-const {default: expect} = await import('expect');
+const { default: expect } = await import('expect');
 
-const {verifyArguments} = await import('../lib/helpers.js');
+const { verifyArguments } = await import('../lib/helpers.js');
 
 function validArg() {}
 
-describe('verifyArguments', function() {
-
-  it('should act as pass-through for a valid set of arguments', function(done) {
+describe('verifyArguments', function () {
+  it('should act as pass-through for a valid set of arguments', function (done) {
     const args = [validArg, validArg];
     expect(verifyArguments(args)).toEqual(args);
     done();
   });
 
-  it('should throw descriptive error message on invalid argument', function(done) {
+  it('should throw descriptive error message on invalid argument', function (done) {
     function invalid() {
       verifyArguments([validArg, 'invalid', validArg]);
     }
@@ -21,7 +20,7 @@ describe('verifyArguments', function() {
     done();
   });
 
-  it('should throw descriptive error message on when no arguments provided', function(done) {
+  it('should throw descriptive error message on when no arguments provided', function (done) {
     function empty() {
       verifyArguments([]);
     }

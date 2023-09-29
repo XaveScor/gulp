@@ -1,13 +1,13 @@
-const {default: expect} = await import('expect');
+const { default: expect } = await import('expect');
 
-const {default: bach} = await import('../index.js');
+const { default: bach } = await import('../index.js');
 
 function fn1(done) {
   done(null, 1);
 }
 
 function fn2(done) {
-  setTimeout(function() {
+  setTimeout(function () {
     done(null, 2);
   }, 500);
 }
@@ -20,45 +20,53 @@ function fnError(done) {
   done(new Error('An Error Occurred'));
 }
 
-describe('series', function() {
-
-  it('should execute functions in series, passing results', function(done) {
-    bach.series(fn1, fn2, fn3)(function(error, results) {
+describe('series', function () {
+  it('should execute functions in series, passing results', function (done) {
+    bach.series(
+      fn1,
+      fn2,
+      fn3,
+    )(function (error, results) {
       expect(error).toEqual(null);
       expect(results).toEqual([1, 2, 3]);
       done();
     });
   });
 
-  it('should execute functions in series, passing error', function(done) {
+  it('should execute functions in series, passing error', function (done) {
     function slowFn(done) {
-      setTimeout(function() {
+      setTimeout(function () {
         done(null, 2);
       }, 500);
     }
-    bach.series(fn1, slowFn, fn3, fnError)(function(error, results) {
+    bach.series(
+      fn1,
+      slowFn,
+      fn3,
+      fnError,
+    )(function (error, results) {
       expect(error).toBeAn(Error);
       expect(results).toEqual([1, 2, 3, undefined]);
       done();
     });
   });
 
-  it('should take extension points and call them for each function', function(done) {
+  it('should take extension points and call them for each function', function (done) {
     const arr = [];
     const fns = [fn1, fn2, fn3];
     bach.series(fn1, fn2, fn3, {
-      create: function(fn, idx) {
+      create: function (fn, idx) {
         expect(fns).toInclude(fn);
         arr[idx] = fn;
         return arr;
       },
-      before: function(storage) {
+      before: function (storage) {
         expect(storage).toEqual(arr);
       },
-      after: function(result, storage) {
+      after: function (result, storage) {
         expect(storage).toEqual(arr);
       },
-    })(function(error) {
+    })(function (error) {
       expect(error).toEqual(null);
       expect(arr).toEqual(fns);
     });

@@ -29,9 +29,8 @@ function buildOnSettled(done) {
     const settledErrors = result.filter(filterError);
     const settledResults = result.filter(filterSuccess);
 
-
-    const errors = settledErrors.map(e => e.value);
-    const results = settledResults.map(r => r.value);
+    const errors = settledErrors.map((e) => e.value);
+    const results = settledResults.map((r) => r.value);
 
     done(errors.length ? errors : null, results.length ? results : null);
   }
@@ -45,7 +44,7 @@ function verifyArguments(args) {
 
   assert.ok(args.length, 'A set of functions to combine is required');
 
-  for(let argIdx = 0; argIdx < args.length; argIdx++) {
+  for (let argIdx = 0; argIdx < args.length; argIdx++) {
     const arg = args[argIdx];
     const isFunction = typeof arg === 'function';
     if (isFunction) {
@@ -57,8 +56,7 @@ function verifyArguments(args) {
       continue;
     }
 
-    const msg = 'Only functions can be combined, got ' + typeof arg +
-      ' for argument ' + argIdx;
+    const msg = 'Only functions can be combined, got ' + typeof arg + ' for argument ' + argIdx;
     assert.ok(isFunction, msg);
   }
 
