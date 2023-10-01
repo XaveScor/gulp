@@ -1,26 +1,36 @@
-const asyncDone = require('async-done');
-const nowAndLater = require('now-and-later');
+const { parseArgs } = require('./parseArgs.js');
+const { customPromisify } = require('../../custom-promisify.js');
 
-const helpers = require('./helpers');
+function series(...args) {
+  const { series, options } = parseArgs(args.flat(Infinity));
+  return (done) => {
+    async function run() {
+      const results = new Array(series.length).fill(undefined);
+      for (let idx = 0; idx < series.length; idx++) {
+        const fn = series[idx];
+        const storage = options.create(fn, idx);
+        options.before(storage);
+        let result;
+        try {
+          result = await customPromisify(fn)();
+          if (result instanceof Error) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw result;
+          }
+          options.after(result, storage);
+        } catch (error) {
+          options.error(error, storage);
+          return [error, results];
+        }
+        results[idx] = result;
+      }
+      return [null, results];
+    }
 
-function iterator(fn, key, cb) {
-  return asyncDone(fn, cb);
+    run().then(([error, results]) => done(error, results));
+  };
 }
 
-function buildSeries() {
-  let args = helpers.verifyArguments(arguments);
-  const lastEl = args.length === 0 ? null : args[args.length - 1];
-  const extensions = helpers.getExtensions(lastEl);
-
-  if (extensions) {
-    args = args.slice(0, args.length - 1);
-  }
-
-  function series(done) {
-    nowAndLater.mapSeries(args, iterator, extensions, done);
-  }
-
-  return series;
-}
-
-module.exports = buildSeries;
+module.exports = {
+  series,
+};
