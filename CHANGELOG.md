@@ -5,6 +5,10 @@
 - `undertaker` is inlined (#1)
 - removed unnecessary dependencies (#5)
 
+### fixed bugs
+
+- gulp.parallel was not parallel. Now it is (#current)
+
 ### Internal changes
 
 - all sources rewrote to ES6 (#25, #23, #16)

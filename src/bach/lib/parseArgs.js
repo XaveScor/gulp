@@ -47,18 +47,18 @@ function parseOptions(options = {}) {
 function parseArgs(args) {
   assert.ok(args.length, 'A set of functions to combine is required');
 
-  const seriesFunctions = [...args];
+  const funcs = [...args];
   let options = parseOptions({});
-  const lastIdx = seriesFunctions.length - 1;
-  if (typeof seriesFunctions[lastIdx] === 'object') {
-    options = parseOptions(seriesFunctions.pop());
+  const lastIdx = funcs.length - 1;
+  if (typeof funcs[lastIdx] === 'object') {
+    options = parseOptions(funcs.pop());
   }
 
-  const nonFunctionId = seriesFunctions.findIndex((arg) => typeof arg !== 'function');
-  console.assert(nonFunctionId === -1, 'Only functions can be combined, got ' + typeof seriesFunctions[nonFunctionId] + ' for argument ' + nonFunctionId);
+  const nonFunctionId = funcs.findIndex((arg) => typeof arg !== 'function');
+  console.assert(nonFunctionId === -1, 'Only functions can be combined, got ' + typeof funcs[nonFunctionId] + ' for argument ' + nonFunctionId);
 
   return {
-    series: seriesFunctions,
+    funcs,
     options,
   };
 }

@@ -1,30 +1,20 @@
 const { parseArgs } = require('./parseArgs.js');
-const { customPromisify } = require('../../custom-promisify.js');
+const { runFunction } = require('../../run-function');
 
 function series(...args) {
-  const { series, options } = parseArgs(args.flat(Infinity));
+  const { funcs, options } = parseArgs(args.flat(Infinity));
   return (done) => {
     async function run() {
-      const results = new Array(series.length).fill(undefined);
-      for (let idx = 0; idx < series.length; idx++) {
-        const fn = series[idx];
-        const storage = options.create(fn, idx);
-        options.before(storage);
-        let result;
-        try {
-          result = await customPromisify(fn)();
-          if (result instanceof Error) {
-            // noinspection ExceptionCaughtLocallyJS
-            throw result;
-          }
-          options.after(result, storage);
-        } catch (error) {
-          options.error(error, storage);
-          return [error, results];
+      const results = new Array(funcs.length).fill(undefined);
+      let error = null;
+      try {
+        for (let idx = 0; idx < funcs.length; idx++) {
+          results[idx] = await runFunction(funcs[idx], idx, options);
         }
-        results[idx] = result;
+      } catch (e) {
+        error = e;
       }
-      return [null, results];
+      return [error, results];
     }
 
     run().then(([error, results]) => done(error, results));

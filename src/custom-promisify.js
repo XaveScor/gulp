@@ -1,4 +1,6 @@
 const { promisify } = require('node:util');
+const eos = require('end-of-stream');
+const exhaust = require('stream-exhaust');
 
 /**
  * should work with:
@@ -12,15 +14,15 @@ const { promisify } = require('node:util');
 function customPromisify(fn) {
   return promisify((done) => {
     Promise.resolve(fn(done))
-      .then((result) => {
+      .then(async (result) => {
         if (result === undefined) {
+          // if undefined, then it's a callback function.
+          // We are waiting for the `done` to be called.
           return;
         }
         // nodejs stream
         if (result?.on) {
-          result.on('close', () => done(null, null));
-          result.on('finish', () => done(null, null));
-          result.on('end', () => done(null, null));
+          eos(exhaust(result), { error: false }, done);
           return;
         }
 
