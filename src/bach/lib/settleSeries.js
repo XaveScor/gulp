@@ -1,27 +1,30 @@
-const asyncSettle = require('async-settle');
-const nowAndLater = require('now-and-later');
+const { parseArgs } = require('./parseArgs.js');
+const { runFunction } = require('../../run-function.js');
 
-const helpers = require('./helpers');
+function settleSeries(...args) {
+  const { funcs, options } = parseArgs(args.flat(Infinity));
+  return (done) => {
+    async function run() {
+      const results = new Array(funcs.length).fill(undefined);
+      const errors = new Array(funcs.length).fill(undefined);
+      for (let idx = 0; idx < funcs.length; idx++) {
+        try {
+          results[idx] = await runFunction(funcs[idx], idx, options);
+        } catch (e) {
+          errors[idx] = e;
+        }
+      }
 
-function iterator(fn, key, cb) {
-  return asyncSettle(fn, cb);
+      const pureResults = results.filter((r) => r !== undefined);
+      const pureErrors = errors.filter((e) => e !== undefined);
+
+      return [pureErrors.length ? pureErrors : null, pureResults.length ? pureResults : null];
+    }
+
+    run().then(([error, results]) => done(error, results));
+  };
 }
 
-function buildSettleSeries() {
-  let args = helpers.verifyArguments(arguments);
-  const lastEl = args.length === 0 ? null : args[args.length - 1];
-  const extensions = helpers.getExtensions(lastEl);
-
-  if (extensions) {
-    args = args.slice(0, args.length - 1);
-  }
-
-  function settleSeries(done) {
-    const onSettled = helpers.onSettled(done);
-    nowAndLater.mapSeries(args, iterator, extensions, onSettled);
-  }
-
-  return settleSeries;
-}
-
-module.exports = buildSettleSeries;
+module.exports = {
+  settleSeries,
+};
