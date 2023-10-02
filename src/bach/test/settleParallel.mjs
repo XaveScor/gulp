@@ -20,7 +20,7 @@ function fnError(done) {
   done(new Error('An Error Occurred'));
 }
 
-describe('settleParallel', function () {
+describe('bach: settleParallel', function () {
   it('should execute functions in parallel, passing settled results', function (done) {
     bach.settleParallel(
       fn1,
