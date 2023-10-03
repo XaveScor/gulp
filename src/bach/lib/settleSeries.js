@@ -1,15 +1,15 @@
-const { parseArgs } = require('./parseArgs.js');
+const { parseOptions } = require('./parseArgs');
 const { runFunction } = require('../../run-function.js');
 
-function settleSeries(...args) {
-  const { funcs, options } = parseArgs(args.flat(Infinity));
+function settleSeries(funcs, options) {
+  const normalizeOptions = parseOptions(options);
   return (done) => {
     async function run() {
       const results = new Array(funcs.length).fill(undefined);
       const errors = new Array(funcs.length).fill(undefined);
       for (let idx = 0; idx < funcs.length; idx++) {
         try {
-          results[idx] = await runFunction(funcs[idx], idx, options);
+          results[idx] = await runFunction(funcs[idx], idx, normalizeOptions);
         } catch (e) {
           errors[idx] = e;
         }
