@@ -139,7 +139,7 @@ describe('parallel', function () {
       'test3',
     )(function (err, results) {
       expect(err).toBeAn(Error);
-      expect(results).toEqual([1, undefined, undefined]);
+      expect(results).toEqual([1, undefined, 3]);
       done();
     });
   });

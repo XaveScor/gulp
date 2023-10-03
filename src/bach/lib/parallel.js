@@ -1,26 +1,30 @@
-const asyncDone = require('async-done');
-const nowAndLater = require('now-and-later');
+const { parseArgs } = require('./parseArgs.js');
+const { runFunction } = require('../../run-function');
 
-const helpers = require('./helpers');
+function parallel(...args) {
+  const { funcs, options } = parseArgs(args.flat(Infinity));
+  return (done) => {
+    async function run() {
+      const results = new Array(funcs.length).fill(undefined);
+      let error = null;
+      try {
+        await Promise.all(
+          funcs.map(async (fn, idx) => {
+            results[idx] = await runFunction(fn, idx, options);
+          }),
+        );
+      } catch (e) {
+        error = e;
+      }
+      return [error, results];
+    }
 
-function iterator(fn, key, cb) {
-  return asyncDone(fn, cb);
+    run().then(([error, results]) => {
+      return done(error, results);
+    });
+  };
 }
 
-function buildParallel() {
-  let args = helpers.verifyArguments(arguments);
-  const lastEl = args.length === 0 ? null : args[args.length - 1];
-  const extensions = helpers.getExtensions(lastEl);
-
-  if (extensions) {
-    args = args.slice(0, args.length - 1);
-  }
-
-  function parallel(done) {
-    nowAndLater.map(args, iterator, extensions, done);
-  }
-
-  return parallel;
-}
-
-module.exports = buildParallel;
+module.exports = {
+  parallel,
+};

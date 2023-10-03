@@ -1,27 +1,34 @@
-const asyncSettle = require('async-settle');
-const nowAndLater = require('now-and-later');
+const { parseArgs } = require('./parseArgs.js');
+const { runFunction } = require('../../run-function.js');
 
-const helpers = require('./helpers');
+function settleParallel(...args) {
+  const { funcs, options } = parseArgs(args.flat(Infinity));
+  return (done) => {
+    async function run() {
+      const results = new Array(funcs.length).fill(undefined);
+      const errors = new Array(funcs.length).fill(undefined);
+      await Promise.all(
+        funcs.map(async (fn, idx) => {
+          try {
+            results[idx] = await runFunction(fn, idx, options);
+          } catch (e) {
+            errors[idx] = e;
+          }
+        }),
+      );
 
-function iterator(fn, key, cb) {
-  return asyncSettle(fn, cb);
+      const pureResults = results.filter((r) => r !== undefined);
+      const pureErrors = errors.filter((e) => e !== undefined);
+
+      return [pureErrors.length ? pureErrors : null, pureResults.length ? pureResults : null];
+    }
+
+    run().then(([error, results]) => {
+      return done(error, results);
+    });
+  };
 }
 
-function buildSettleParallel() {
-  let args = helpers.verifyArguments(arguments);
-  const lastEl = args.length === 0 ? null : args[args.length - 1];
-  const extensions = helpers.getExtensions(lastEl);
-
-  if (extensions) {
-    args = args.slice(0, args.length - 1);
-  }
-
-  function settleParallel(done) {
-    const onSettled = helpers.onSettled(done);
-    nowAndLater.map(args, iterator, extensions, onSettled);
-  }
-
-  return settleParallel;
-}
-
-module.exports = buildSettleParallel;
+module.exports = {
+  settleParallel,
+};

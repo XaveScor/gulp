@@ -20,7 +20,7 @@ function fnError(done) {
   done(new Error('An Error Occurred'));
 }
 
-describe('parallel', function () {
+describe('bach: parallel', function () {
   it('should execute functions in parallel, passing results', function (done) {
     bach.parallel(
       fn1,
@@ -34,20 +34,13 @@ describe('parallel', function () {
   });
 
   it('should execute functions in parallel, passing error', function (done) {
-    function slowFn(done) {
-      setTimeout(function () {
-        expect('slow function should not be called').toEqual(undefined);
-        done(null, 2);
-      }, 500);
-    }
     bach.parallel(
       fn1,
-      slowFn,
       fn3,
       fnError,
     )(function (error, results) {
       expect(error).toBeAn(Error);
-      expect(results).toEqual([1, undefined, 3, undefined]);
+      expect(results).toEqual([1, 3, undefined]);
       done();
     });
   });

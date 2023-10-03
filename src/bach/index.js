@@ -1,6 +1,11 @@
+const { series } = require('./lib/series');
+const { parallel } = require('./lib/parallel');
+const { settleSeries } = require('./lib/settleSeries');
+const { settleParallel } = require('./lib/settleParallel');
+
 module.exports = {
-  series: require('./lib/series'),
-  parallel: require('./lib/parallel'),
-  settleSeries: require('./lib/settleSeries'),
-  settleParallel: require('./lib/settleParallel'),
+  series,
+  parallel,
+  settleSeries,
+  settleParallel,
 };
