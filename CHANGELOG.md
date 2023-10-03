@@ -7,6 +7,7 @@
 
 ### fixed bugs
 
+- gulp now runs the task once even if it is called multiple times (#30)
 - gulp.parallel was not parallel. Now it is (#27)
 
 ### Internal changes
