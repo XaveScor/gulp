@@ -1,4 +1,4 @@
-const EventEmitter = require('events').EventEmitter;
+const { EventEmitter } = require('events');
 const bach = require('../bach/index.js');
 const DefaultRegistry = require('undertaker-registry');
 
@@ -99,12 +99,12 @@ class Undertaker extends EventEmitter {
     return retrieveLastRun(fn, timeResolution);
   }
 
-  parallel() {
+  parallel(...args) {
     const create = this._settle ? bach.settleParallel : bach.parallel;
 
-    const args = normalizeArgs(this._registry, arguments);
+    const normalizedArgs = normalizeArgs(this._registry, args);
     const extensions = createExtensions(this);
-    const fn = create(args, extensions);
+    const fn = create(normalizedArgs, extensions);
     const name = '<parallel>';
 
     metadata.set(fn, {
@@ -114,7 +114,7 @@ class Undertaker extends EventEmitter {
         label: name,
         type: 'function',
         branch: true,
-        nodes: buildTree(args),
+        nodes: buildTree(normalizedArgs),
       },
     });
     return fn;
@@ -148,10 +148,11 @@ class Undertaker extends EventEmitter {
     assert(typeof name === 'string', 'Task name must be a string');
     assert(typeof fn === 'function', 'Task function must be specified');
 
-    function taskWrapper() {
-      return fn.apply(this, arguments);
+    function taskWrapper(...args) {
+      return fn.apply(this, args);
     }
 
+    Object.defineProperty(taskWrapper, 'length', { value: fn.length });
     taskWrapper.unwrap = () => fn;
     taskWrapper.displayName = name;
 

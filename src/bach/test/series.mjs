@@ -2,6 +2,8 @@ const { default: expect } = await import('expect');
 
 const { default: bach } = await import('../index.js');
 
+function fnSync() {}
+
 function fn1() {
   return 1;
 }
@@ -21,6 +23,13 @@ function fnError(done) {
 }
 
 describe('bach: series', function () {
+  it('should can take the sync functions without return value', function (done) {
+    bach.series([fnSync])(function (error, results) {
+      expect(error).toEqual(null);
+      expect(results).toEqual([undefined]);
+      done();
+    });
+  });
   it('should can take the sync functions', function (done) {
     bach.series([fn1])(function (error, results) {
       expect(error).toEqual(null);

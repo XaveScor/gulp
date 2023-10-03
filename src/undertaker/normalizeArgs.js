@@ -22,7 +22,7 @@ function normalizeArgs(registry, args) {
     return fn;
   }
 
-  const flattenArgs = [...args].flat(Infinity);
+  const flattenArgs = args.flat(Infinity);
   assert(flattenArgs.length, 'One or more tasks should be combined using series or parallel');
 
   return flattenArgs.map((task) => getFunction(task));

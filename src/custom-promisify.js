@@ -12,22 +12,21 @@ const exhaust = require('stream-exhaust');
  * @returns {Function}
  */
 function customPromisify(fn) {
+  const argsNumber = fn.length;
   return promisify((done) => {
-    Promise.resolve(fn(done))
-      .then(async (result) => {
-        if (result === undefined) {
-          // if undefined, then it's a callback function.
-          // We are waiting for the `done` to be called.
-          return;
-        }
-        // nodejs stream
-        if (result?.on) {
-          eos(exhaust(result), { error: false }, done);
-          return;
-        }
+    const fnRes = fn(done);
+    if (argsNumber > 0) {
+      // it's a callback function.
+      return;
+    }
 
-        done(null, result);
-      })
+    if (fnRes?.on) {
+      eos(exhaust(fnRes), { error: false }, done);
+      return;
+    }
+
+    Promise.resolve(fnRes)
+      .then(async (result) => done(null, result))
       .catch((error) => done(error));
   });
 }

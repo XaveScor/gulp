@@ -30,22 +30,22 @@ function InvalidRegistry() {}
 describe('registry', function () {
   describe('method', function () {
     it('should return the current registry when no arguments are given', function (done) {
-      var taker = new Undertaker();
+      const taker = new Undertaker();
       expect(taker.registry()).toEqual(taker._registry);
       done();
     });
 
     it('should set the registry to the given registry instance argument', function (done) {
-      var taker = new Undertaker();
-      var customRegistry = new CustomRegistry();
+      const taker = new Undertaker();
+      const customRegistry = new CustomRegistry();
       taker.registry(customRegistry);
       expect(taker.registry()).toEqual(customRegistry);
       done();
     });
 
     it('should validate the custom registry instance', function (done) {
-      var taker = new Undertaker();
-      var invalid = new InvalidRegistry();
+      const taker = new Undertaker();
+      const invalid = new InvalidRegistry();
 
       function invalidSet() {
         taker.registry(invalid);
@@ -56,8 +56,8 @@ describe('registry', function () {
     });
 
     it('should transfer all tasks from old registry to new', function (done) {
-      var taker = new Undertaker(new CommonRegistry());
-      var customRegistry = new DefaultRegistry();
+      const taker = new Undertaker(new CommonRegistry());
+      const customRegistry = new DefaultRegistry();
       taker.registry(customRegistry);
 
       expect(taker.task('clean')).toBeA('function');
@@ -66,7 +66,7 @@ describe('registry', function () {
     });
 
     it('allows multiple custom registries to used', function (done) {
-      var taker = new Undertaker();
+      const taker = new Undertaker();
       taker.registry(new CommonRegistry());
 
       expect(taker.task('clean')).toBeA('function');
@@ -89,7 +89,7 @@ describe('registry', function () {
     });
 
     it('throws with a descriptive method when constructor is passed', function (done) {
-      var taker = new Undertaker();
+      const taker = new Undertaker();
 
       function ctor() {
         taker.registry(CommonRegistry);
@@ -100,9 +100,9 @@ describe('registry', function () {
     });
 
     it('calls into the init function after tasks are transferred', function (done) {
-      var taker = new Undertaker(new CommonRegistry());
+      const taker = new Undertaker(new CommonRegistry());
 
-      var ogInit = DefaultRegistry.prototype.init;
+      const ogInit = DefaultRegistry.prototype.init;
 
       DefaultRegistry.prototype.init = function (inst) {
         expect(inst).toEqual(taker);
@@ -119,21 +119,21 @@ describe('registry', function () {
 
   describe('constructor', function () {
     it('should take a custom registry on instantiation', function (done) {
-      var taker = new Undertaker(new CustomRegistry());
+      const taker = new Undertaker(new CustomRegistry());
       expect(taker.registry()).toBeA(CustomRegistry);
       expect(taker.registry()).toNotBeA(DefaultRegistry);
       done();
     });
 
     it('should default to undertaker-registry if not constructed with custom registry', function (done) {
-      var taker = new Undertaker();
+      const taker = new Undertaker();
       expect(taker.registry()).toBeA(DefaultRegistry);
       expect(taker.registry()).toNotBeA(CustomRegistry);
       done();
     });
 
     it('should take a registry that pre-defines tasks', function (done) {
-      var taker = new Undertaker(new CommonRegistry());
+      const taker = new Undertaker(new CommonRegistry());
       expect(taker.registry()).toBeA(CommonRegistry);
       expect(taker.registry()).toBeA(DefaultRegistry);
       expect(taker.task('clean')).toBeA('function');
@@ -143,7 +143,7 @@ describe('registry', function () {
 
     it('should throw upon invalid registry', function (done) {
       /* eslint no-unused-vars: 0 */
-      var taker;
+      let taker;
 
       function noGet() {
         taker = new Undertaker(new InvalidRegistry());
@@ -179,7 +179,7 @@ describe('registry', function () {
   });
 
   it('does not require the `set` method to return a task', function (done) {
-    var taker = new Undertaker();
+    const taker = new Undertaker();
     taker.registry(new SetNoReturnRegistry());
     taker.task('test', noop);
     taker.on('start', function (data) {
@@ -190,8 +190,8 @@ describe('registry', function () {
   });
 
   it('should fail and offer tasks which are close in name', function (done) {
-    var taker = new Undertaker(new CommonRegistry());
-    var customRegistry = new DefaultRegistry();
+    const taker = new Undertaker(new CommonRegistry());
+    const customRegistry = new DefaultRegistry();
     taker.registry(customRegistry);
 
     function fail() {

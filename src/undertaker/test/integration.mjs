@@ -14,7 +14,7 @@ const { default: Undertaker } = await import('../index.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-var isWindows = os.platform() === 'win32';
+const isWindows = os.platform() === 'win32';
 
 function cleanup() {
   const dirs = ['./fixtures/out/', './fixtures/tmp/'];
@@ -28,8 +28,8 @@ function cleanup() {
 
 function noop() {}
 
-describe('integrations', function () {
-  var taker;
+describe('undertaker: integrations', function () {
+  let taker;
 
   beforeEach(function (done) {
     taker = new Undertaker();
@@ -75,40 +75,10 @@ describe('integrations', function () {
     taker.parallel('test')(done);
   });
 
-  // it was skipped with `once` function before. But the behavior is broken. The `clean` function didn't call once
-  it.skip('should run dependencies once', function (done) {
+  it('should run dependencies once', function (done) {
     const fn = sinon.fake();
 
-    taker.task('clean', fn);
-
-    taker.task(
-      'build-this',
-      taker.series('clean', function (cb) {
-        cb();
-      }),
-    );
-    taker.task(
-      'build-that',
-      taker.series('clean', function (cb) {
-        cb();
-      }),
-    );
-    taker.task('build', taker.series('clean', taker.parallel(['build-this', 'build-that'])));
-
-    taker.parallel('build')(function (err) {
-      expect(fn.callCount).toEqual(1);
-      done(err);
-    });
-  });
-
-  // it was skipped with `once` function before. But the behavior is broken. The `clean` function didn't call once
-  it.skip('should run dependencies once', function (done) {
-    const fn = sinon.fake();
-
-    taker.task('clean', (cb) => {
-      fn();
-      cb();
-    });
+    taker.task('clean', async () => fn());
 
     taker.task(
       'build-this',
@@ -133,7 +103,7 @@ describe('integrations', function () {
   it('can use lastRun with vinyl.src `since` option', function (done) {
     this.timeout(5000);
 
-    var count = 0;
+    let count = 0;
 
     function setup() {
       return vinyl.src('./fixtures/test*.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/tmp', { cwd: __dirname }));

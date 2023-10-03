@@ -20,8 +20,8 @@ function fnError(done) {
   done(new Error('An Error Occurred'));
 }
 
-describe('parallel', function () {
-  var taker;
+describe('undertaker: parallel', function () {
+  let taker;
 
   beforeEach(function (done) {
     taker = new Undertaker();
@@ -118,7 +118,7 @@ describe('parallel', function () {
   });
 
   it('should take nested parallel', function (done) {
-    var parallel1 = taker.parallel('test1', 'test2', 'test3');
+    const parallel1 = taker.parallel('test1', 'test2', 'test3');
     taker.parallel(
       'test1',
       parallel1,
@@ -169,7 +169,7 @@ describe('parallel', function () {
   });
 
   it('should not register a displayName on the returned function by default', function (done) {
-    var task = taker.parallel(fn1);
+    const task = taker.parallel(fn1);
     expect(task.displayName).toEqual(undefined);
     done();
   });
