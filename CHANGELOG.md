@@ -7,10 +7,11 @@
 
 ### fixed bugs
 
-- gulp.parallel was not parallel. Now it is (#current)
+- gulp.parallel was not parallel. Now it is (#27)
 
 ### Internal changes
 
+- all sources rewrote to Promise Api(#27)
 - all sources rewrote to ES6 (#25, #23, #16)
 - all tests rewrote to ESM (#3)
 - eslint removed (#6)
