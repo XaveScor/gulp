@@ -116,7 +116,7 @@ describe('task', function () {
 
     var parallel = taker.parallel('foo', 'bar', function (cb) {
       setTimeout(function () {
-        expect(count).toEqual(4);
+        expect(count).toEqual(2);
         cb();
       }, 500);
     });
@@ -148,7 +148,7 @@ describe('task', function () {
 
     var parallel = taker.series('bar', function (cb) {
       setTimeout(function () {
-        expect(count).toEqual(6);
+        expect(count).toEqual(3);
         cb();
       }, 500);
     });

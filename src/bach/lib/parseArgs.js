@@ -1,16 +1,9 @@
-const assert = require('assert');
-
 const noop = () => {};
 /**
  *
  * @param options {Object}
  */
 function parseOptions(options = {}) {
-  if (options.concurrency != null && typeof options.concurrency !== 'number' && options.concurrency <= 0) {
-    console.warn('bach: `concurrency` option must be a number greater than 0, got ' + typeof options.concurrency + ' ' + options.concurrency);
-  }
-  const concurrency = options.concurrency ?? 1;
-
   if (options.create != null && typeof options.create !== 'function') {
     console.warn('bach: `create` option must be a function, got ' + typeof options.create + ' ' + options.create);
   }
@@ -32,7 +25,6 @@ function parseOptions(options = {}) {
   const error = options.error ?? noop;
 
   return {
-    concurrency,
     create,
     before,
     after,
@@ -40,29 +32,6 @@ function parseOptions(options = {}) {
   };
 }
 
-/**
- * [func, func, func, ..., options] => {series: [func, func, func, ...], options: options}
- * @param args {Array<Function|Object>}
- */
-function parseArgs(args) {
-  assert.ok(args.length, 'A set of functions to combine is required');
-
-  const funcs = [...args];
-  let options = parseOptions({});
-  const lastIdx = funcs.length - 1;
-  if (typeof funcs[lastIdx] === 'object') {
-    options = parseOptions(funcs.pop());
-  }
-
-  const nonFunctionId = funcs.findIndex((arg) => typeof arg !== 'function');
-  console.assert(nonFunctionId === -1, 'Only functions can be combined, got ' + typeof funcs[nonFunctionId] + ' for argument ' + nonFunctionId);
-
-  return {
-    funcs,
-    options,
-  };
-}
-
 module.exports = {
-  parseArgs,
+  parseOptions,
 };

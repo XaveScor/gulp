@@ -22,11 +22,7 @@ function fnError(done) {
 
 describe('settleSeries', function () {
   it('should execute functions in series, passing settled results', function (done) {
-    bach.settleSeries(
-      fn1,
-      fn2,
-      fn3,
-    )(function (errors, results) {
+    bach.settleSeries([fn1, fn2, fn3])(function (errors, results) {
       expect(errors).toEqual(null);
       expect(results).toEqual([1, 2, 3]);
       done();
@@ -39,12 +35,7 @@ describe('settleSeries', function () {
         done(null, 2);
       }, 500);
     }
-    bach.settleSeries(
-      fn1,
-      slowFn,
-      fn3,
-      fnError,
-    )(function (errors, results) {
+    bach.settleSeries([fn1, slowFn, fn3, fnError])(function (errors, results) {
       expect(errors).toBeAn(Array);
       expect(errors[0]).toBeAn(Error);
       expect(results).toEqual([1, 2, 3]);
@@ -55,7 +46,7 @@ describe('settleSeries', function () {
   it('should take extension points and call them for each function', function (done) {
     const arr = [];
     const fns = [fn1, fn2, fn3];
-    bach.settleSeries(fn1, fn2, fn3, {
+    bach.settleSeries([fn1, fn2, fn3], {
       create: function (fn, idx) {
         expect(fns).toInclude(fn);
         arr[idx] = fn;

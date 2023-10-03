@@ -1,8 +1,8 @@
-const { parseArgs } = require('./parseArgs.js');
 const { runFunction } = require('../../run-function.js');
+const { parseOptions } = require('./parseArgs');
 
-function settleParallel(...args) {
-  const { funcs, options } = parseArgs(args.flat(Infinity));
+function settleParallel(funcs, options) {
+  const normalizeOptions = parseOptions(options);
   return (done) => {
     async function run() {
       const results = new Array(funcs.length).fill(undefined);
@@ -10,7 +10,7 @@ function settleParallel(...args) {
       await Promise.all(
         funcs.map(async (fn, idx) => {
           try {
-            results[idx] = await runFunction(fn, idx, options);
+            results[idx] = await runFunction(fn, idx, normalizeOptions);
           } catch (e) {
             errors[idx] = e;
           }
