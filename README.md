@@ -15,24 +15,13 @@
 - **Strong Ecosystem** - Use npm modules to do anything you want + over 3000 curated plugins for streaming file transformations.
 - **Simple** - By providing only a minimal API surface, gulp is easy to learn and simple to use.
 
-## What's new in 4.0?!
+## What's difference between @xavescor/gulp@5 and original gulp@4?
 
-* The task system was rewritten from the ground-up, allowing task composition using `series()` and `parallel()` methods.
-* The watcher was updated, now using chokidar (no more need for gulp-watch!), with feature parity to our task system.
-* First-class support was added for incremental builds using `lastRun()`.
-* A `symlink()` method was exposed to create symlinks instead of copying files.
-* Built-in support for sourcemaps was added - the gulp-sourcemaps plugin is no longer necessary!
-* Task registration of exported functions - using node or ES exports - is now recommended.
-* Custom registries were designed, allowing for shared tasks or augmented functionality.
-* Stream implementations were improved, allowing for better conditional and phased builds.
+Nothing changed except the package name. This package is a fork of gulp@4, but with a different name.
+The reason for this is that the original gulp@4 package is not maintained anymore. So, I decided to fork it and maintain it ourselves.
 
-
-## gulp for enterprise
-
-Available as part of the Tidelift Subscription
-
-The maintainers of gulp and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/npm-gulp?utm_source=npm-gulp&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
-
+I will save the maximum of backward compatibility with the original gulp@4 package. Most gulp@4 code should works perfect with this package.
+For other changes please see the [CHANGELOG.md](CHANGELOG.md) file or [Releases page](https://github.com/XaveScor/gulp/releases).
 
 ## Installation
 
