@@ -2,9 +2,17 @@
 
 ## UNRELEASED
 
-## 5.1.0
+## 5.1.1
+
+- fixing release pipeline. I forgot to publish src folder to npm. Fixed now
+
+## 5.1.0(broken)
 
 - removed unnecessary dependencies (#5)
+
+## broken
+
+Please, upgrade to v5.1.1. I forgot to publish all filed into npm.
 
 ### fixed bugs
 
