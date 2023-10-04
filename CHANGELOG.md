@@ -2,7 +2,8 @@
 
 ## UNRELEASED
 
-- `undertaker` is inlined (#1)
+## 5.1.0
+
 - removed unnecessary dependencies (#5)
 
 ### fixed bugs
@@ -12,6 +13,7 @@
 
 ### Internal changes
 
+- `undertaker` is inlined (#1)
 - all sources rewrote to Promise Api(#27)
 - all sources rewrote to ES6 (#25, #23, #16)
 - all tests rewrote to ESM (#3)
