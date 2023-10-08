@@ -1,12 +1,15 @@
 const { customPromisify } = require('./custom-promisify.js');
 
+const cacheEnabled = false;
 const cache = new Map();
 async function call(fn) {
-  if (cache.has(fn)) {
+  if (cacheEnabled && cache.has(fn)) {
     return cache.get(fn);
   }
   const result = await customPromisify(fn)();
-  cache.set(fn, result);
+  if (cacheEnabled) {
+    cache.set(fn, result);
+  }
 
   return result;
 }
