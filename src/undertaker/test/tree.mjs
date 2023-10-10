@@ -1,3 +1,5 @@
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+
 const { default: expect } = await import('expect');
 
 const { default: Undertaker } = await import('../index.js');
@@ -16,6 +18,8 @@ describe('tree', function () {
   var taker;
 
   beforeEach(function (done) {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
     taker = new Undertaker();
     done();
   });

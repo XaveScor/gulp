@@ -1,3 +1,5 @@
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+
 const { default: expect } = await import('expect');
 
 const { default: Undertaker } = await import('../index.js');
@@ -7,6 +9,9 @@ describe('lastRun', function () {
   var defaultResolution = process.env.UNDERTAKER_TIME_RESOLUTION;
 
   beforeEach(function (done) {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
+
     process.env.UNDERTAKER_TIME_RESOLUTION = '0';
     taker = new Undertaker();
 

@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../src/deprecation.mjs';
 
 const { default: expect } = await import('expect');
 const { default: gulp } = await import('../index.js');
@@ -7,6 +8,10 @@ const { default: gulp } = await import('../index.js');
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('gulp.src()', function () {
+  beforeEach(() => {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
+  });
   it('should return a stream', function (done) {
     var stream = gulp.src('./fixtures/*.coffee', { cwd: __dirname });
     expect(stream).toExist();

@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+- run each task more than once deprecated. Please, see [DEPRECATIONS.md](./DEPRECATIONS.md) for more details (#36)
+
 ## 5.1.2
 
 - reverting fixed bug(gulp now runs the task once even if it is called multiple times(#30)) fixed in v5.1.0. I will create the migration mechanism later.

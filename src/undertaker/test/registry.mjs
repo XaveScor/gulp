@@ -1,3 +1,5 @@
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+
 const { default: expect } = await import('expect');
 const { default: DefaultRegistry } = await import('undertaker-registry');
 const { default: CommonRegistry } = await import('undertaker-common-tasks');
@@ -28,6 +30,10 @@ SetNoReturnRegistry.prototype.tasks = noop;
 function InvalidRegistry() {}
 
 describe('registry', function () {
+  beforeEach(() => {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
+  });
   describe('method', function () {
     it('should return the current registry when no arguments are given', function (done) {
       const taker = new Undertaker();
