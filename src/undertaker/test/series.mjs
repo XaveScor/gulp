@@ -1,3 +1,5 @@
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+
 const { default: expect } = await import('expect');
 
 const { default: Undertaker } = await import('../index.js');
@@ -24,6 +26,8 @@ describe('series', function () {
   var taker;
 
   beforeEach(function (done) {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
     taker = new Undertaker();
     taker.task('test1', fn1);
     taker.task('test2', fn2);

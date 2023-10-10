@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../src/deprecation.mjs';
 
 const { default: expect } = await import('expect');
 const { default: gulp } = await import('../index.js');
@@ -11,6 +12,8 @@ var outpath = path.join(__dirname, './out-fixtures');
 
 describe('gulp.dest()', function () {
   beforeEach(() => {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
     fs.rmSync(outpath, { recursive: true, force: true });
   });
   afterEach(() => {

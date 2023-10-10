@@ -1,7 +1,13 @@
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../src/deprecation.mjs';
+
 const { default: expect } = await import('expect');
 const { default: gulp } = await import('../index.js');
 
 describe('gulp', function () {
+  beforeEach(() => {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
+  });
   describe('hasOwnProperty', function () {
     it('src', function (done) {
       expect(gulp.hasOwnProperty('src')).toEqual(true);

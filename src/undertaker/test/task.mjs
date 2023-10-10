@@ -1,3 +1,5 @@
+import { disableDeprecationWarnings, resetDeprecationFlags, setDeprecationFlags } from '../../deprecation.mjs';
+
 const { default: expect } = await import('expect');
 
 const { default: Undertaker } = await import('../index.js');
@@ -12,6 +14,8 @@ describe('task', function () {
   var taker;
 
   beforeEach(function (done) {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
     taker = new Undertaker();
     done();
   });
@@ -99,7 +103,7 @@ describe('task', function () {
     done();
   });
 
-  it('should allow using aliased tasks in composite tasks', function (done) {
+  it('[Deprecated: RunTaskOnce]should allow using aliased tasks in composite tasks', function (done) {
     var count = 0;
     function fn(cb) {
       count++;
@@ -124,7 +128,36 @@ describe('task', function () {
     taker.series(series, parallel)(done);
   });
 
-  it('should allow composite tasks tasks to be aliased', function (done) {
+  it('should allow using aliased tasks in composite tasks', function (done) {
+    setDeprecationFlags({
+      taskRunsOnce: true,
+    });
+    let count = 0;
+
+    function fn(cb) {
+      count++;
+      cb();
+    }
+
+    taker.task('foo', fn);
+    taker.task('bar', fn);
+
+    const series = taker.series('foo', 'bar', function (cb) {
+      expect(count).toEqual(2);
+      cb();
+    });
+
+    const parallel = taker.parallel('foo', 'bar', function (cb) {
+      setTimeout(function () {
+        expect(count).toEqual(2);
+        cb();
+      }, 500);
+    });
+
+    taker.series(series, parallel)(done);
+  });
+
+  it('[Deprecated: RunTaskOnce]should allow composite tasks tasks to be aliased', function (done) {
     var count = 0;
     function fn1(cb) {
       count += 1;
@@ -149,6 +182,41 @@ describe('task', function () {
     var parallel = taker.series('bar', function (cb) {
       setTimeout(function () {
         expect(count).toEqual(6);
+        cb();
+      }, 500);
+    });
+
+    taker.series(series, parallel)(done);
+  });
+  it('should allow composite tasks tasks to be aliased', function (done) {
+    setDeprecationFlags({
+      taskRunsOnce: true,
+    });
+    let count = 0;
+
+    function fn1(cb) {
+      count += 1;
+      cb();
+    }
+    function fn2(cb) {
+      count += 2;
+      cb();
+    }
+
+    taker.task('ser', taker.series(fn1, fn2));
+    taker.task('foo', taker.task('ser'));
+
+    taker.task('par', taker.parallel(fn1, fn2));
+    taker.task('bar', taker.task('par'));
+
+    const series = taker.series('foo', function (cb) {
+      expect(count).toEqual(3);
+      cb();
+    });
+
+    const parallel = taker.series('bar', function (cb) {
+      setTimeout(function () {
+        expect(count).toEqual(3);
         cb();
       }, 500);
     });

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { disableDeprecationWarnings, resetDeprecationFlags, setDeprecationFlags } from '../../deprecation.mjs';
 
 const { default: expect } = await import('expect');
 const { default: vinyl } = await import('vinyl-fs');
@@ -32,6 +33,8 @@ describe('undertaker: integrations', function () {
   let taker;
 
   beforeEach(function (done) {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
     taker = new Undertaker();
     done();
   });
@@ -75,8 +78,10 @@ describe('undertaker: integrations', function () {
     taker.parallel('test')(done);
   });
 
-  // Skipped until we didn't have a flag for this
-  it.skip('should run dependencies once', function (done) {
+  it('should run dependencies once', function (done) {
+    setDeprecationFlags({
+      taskRunsOnce: true,
+    });
     const fn = sinon.fake();
 
     taker.task('clean', async () => fn());

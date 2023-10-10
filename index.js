@@ -38,4 +38,16 @@ class Gulp extends Undertaker {
 Gulp.prototype.Gulp = Gulp;
 
 const inst = new Gulp();
+
+inst.setDeprecationFlags = async (flags) => {
+  const deprecation = await import('./src/deprecation.mjs');
+  deprecation.setDeprecationFlags(flags);
+};
+
+(async () => {
+  const deprecation = await import('./src/deprecation.mjs');
+
+  deprecation.showDeprecationWarning();
+})();
+
 module.exports = inst;

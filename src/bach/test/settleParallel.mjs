@@ -1,3 +1,5 @@
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+
 const { default: expect } = await import('expect');
 
 const { default: bach } = await import('../index.js');
@@ -21,6 +23,10 @@ function fnError(done) {
 }
 
 describe('bach: settleParallel', function () {
+  beforeEach(() => {
+    disableDeprecationWarnings();
+    resetDeprecationFlags();
+  });
   it('should execute functions in parallel, passing settled results', function (done) {
     bach.settleParallel([fn1, fn2, fn3])(function (errors, results) {
       expect(errors).toEqual(null);
