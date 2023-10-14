@@ -1,4 +1,4 @@
-const { runFunction } = require('../../run-function.js');
+const { runFunction } = require('../run-function.js');
 const { parseOptions } = require('./parseArgs');
 
 function settleParallel(funcs, options) {

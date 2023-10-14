@@ -1,8 +1,7 @@
 import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+import * as bach from '../index.mjs';
 
 const { default: expect } = await import('expect');
-
-const { default: bach } = await import('../index.js');
 
 function fnSync() {}
 

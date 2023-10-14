@@ -1,5 +1,5 @@
 const { parseOptions } = require('./parseArgs');
-const { runFunction } = require('../../run-function.js');
+const { runFunction } = require('../run-function.js');
 
 function settleSeries(funcs, options) {
   const normalizeOptions = parseOptions(options);
