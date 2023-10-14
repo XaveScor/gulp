@@ -2,7 +2,7 @@ import { disableDeprecationWarnings, resetDeprecationFlags } from '../../depreca
 
 const { default: expect } = await import('expect');
 
-const { default: Undertaker } = await import('../index.js');
+const { Gulp } = await import('../../gulp.cjs');
 
 describe('lastRun', function () {
   var taker, test1, test2, error, alias;
@@ -13,7 +13,7 @@ describe('lastRun', function () {
     resetDeprecationFlags();
 
     process.env.UNDERTAKER_TIME_RESOLUTION = '0';
-    taker = new Undertaker();
+    taker = new Gulp();
 
     test1 = function (cb) {
       cb();
