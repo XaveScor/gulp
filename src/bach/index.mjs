@@ -1,6 +1,4 @@
-const { series } = await import('./series.js');
-const { settleSeries } = await import('./settleSeries.js');
-
-export { series, settleSeries };
+export { series } from './series.mjs';
 export { parallel } from './parallel.mjs';
+export { settleSeries } from './settleSeries.mjs';
 export { settleParallel } from './settleParallel.mjs';

@@ -72,8 +72,8 @@ class Gulp extends EventEmitter {
         return create(normalizedArgs, extensions);
       }
 
-      run().then((fx) => {
-        return fx(done);
+      run().then(([error, results]) => {
+        return done(error, results);
       });
     };
     const name = '<series>';
