@@ -11,7 +11,7 @@ const { default: jshint } = await import('gulp-jshint');
 const { default: through } = await import('through2');
 const { default: sinon } = await import('sinon');
 
-const { default: Undertaker } = await import('../index.js');
+const { Gulp } = await import('../../gulp.cjs');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,7 +35,7 @@ describe('undertaker: integrations', function () {
   beforeEach(function (done) {
     disableDeprecationWarnings();
     resetDeprecationFlags();
-    taker = new Undertaker();
+    taker = new Gulp();
     done();
   });
 

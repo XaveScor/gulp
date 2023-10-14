@@ -2,7 +2,7 @@ import { disableDeprecationWarnings, resetDeprecationFlags } from '../../depreca
 
 const { default: expect } = await import('expect');
 
-const { default: Undertaker } = await import('../index.js');
+const { Gulp } = await import('../../gulp.cjs');
 const { default: simple } = await import('./fixtures/taskTree/simple.js');
 const { default: singleLevel } = await import('./fixtures/taskTree/singleLevel.js');
 const { default: doubleLevel } = await import('./fixtures/taskTree/doubleLevel.js');
@@ -20,7 +20,7 @@ describe('tree', function () {
   beforeEach(function (done) {
     disableDeprecationWarnings();
     resetDeprecationFlags();
-    taker = new Undertaker();
+    taker = new Gulp();
     done();
   });
 

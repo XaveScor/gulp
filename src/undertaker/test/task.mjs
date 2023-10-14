@@ -2,7 +2,7 @@ import { disableDeprecationWarnings, resetDeprecationFlags, setDeprecationFlags 
 
 const { default: expect } = await import('expect');
 
-const { default: Undertaker } = await import('../index.js');
+const { Gulp } = await import('../../gulp.cjs');
 
 function noop(done) {
   done();
@@ -16,7 +16,7 @@ describe('task', function () {
   beforeEach(function (done) {
     disableDeprecationWarnings();
     resetDeprecationFlags();
-    taker = new Undertaker();
+    taker = new Gulp();
     done();
   });
 

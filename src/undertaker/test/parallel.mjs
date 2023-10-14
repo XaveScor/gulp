@@ -2,7 +2,7 @@ import { disableDeprecationWarnings, resetDeprecationFlags } from '../../depreca
 
 const { default: expect } = await import('expect');
 
-const { default: Undertaker } = await import('../index.js');
+const { Gulp } = await import('../../gulp.cjs');
 
 function fn1(done) {
   done(null, 1);
@@ -28,7 +28,7 @@ describe('undertaker: parallel', function () {
   beforeEach(function (done) {
     disableDeprecationWarnings();
     resetDeprecationFlags();
-    taker = new Undertaker();
+    taker = new Gulp();
     taker.task('test1', fn1);
     taker.task('test2', fn2);
     taker.task('test3', fn3);

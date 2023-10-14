@@ -5,7 +5,7 @@ const { default: DefaultRegistry } = await import('undertaker-registry');
 const { default: CommonRegistry } = await import('undertaker-common-tasks');
 const { default: MetadataRegistry } = await import('undertaker-task-metadata');
 
-const { default: Undertaker } = await import('../index.js');
+const { Gulp } = await import('../../gulp.cjs');
 
 function noop() {}
 
@@ -36,13 +36,13 @@ describe('registry', function () {
   });
   describe('method', function () {
     it('should return the current registry when no arguments are given', function (done) {
-      const taker = new Undertaker();
+      const taker = new Gulp();
       expect(taker.registry()).toEqual(taker._registry);
       done();
     });
 
     it('should set the registry to the given registry instance argument', function (done) {
-      const taker = new Undertaker();
+      const taker = new Gulp();
       const customRegistry = new CustomRegistry();
       taker.registry(customRegistry);
       expect(taker.registry()).toEqual(customRegistry);
@@ -50,7 +50,7 @@ describe('registry', function () {
     });
 
     it('should validate the custom registry instance', function (done) {
-      const taker = new Undertaker();
+      const taker = new Gulp();
       const invalid = new InvalidRegistry();
 
       function invalidSet() {
@@ -62,7 +62,7 @@ describe('registry', function () {
     });
 
     it('should transfer all tasks from old registry to new', function (done) {
-      const taker = new Undertaker(new CommonRegistry());
+      const taker = new Gulp(new CommonRegistry());
       const customRegistry = new DefaultRegistry();
       taker.registry(customRegistry);
 
@@ -72,7 +72,7 @@ describe('registry', function () {
     });
 
     it('allows multiple custom registries to used', function (done) {
-      const taker = new Undertaker();
+      const taker = new Gulp();
       taker.registry(new CommonRegistry());
 
       expect(taker.task('clean')).toBeA('function');
@@ -95,7 +95,7 @@ describe('registry', function () {
     });
 
     it('throws with a descriptive method when constructor is passed', function (done) {
-      const taker = new Undertaker();
+      const taker = new Gulp();
 
       function ctor() {
         taker.registry(CommonRegistry);
@@ -106,7 +106,7 @@ describe('registry', function () {
     });
 
     it('calls into the init function after tasks are transferred', function (done) {
-      const taker = new Undertaker(new CommonRegistry());
+      const taker = new Gulp(new CommonRegistry());
 
       const ogInit = DefaultRegistry.prototype.init;
 
@@ -125,21 +125,21 @@ describe('registry', function () {
 
   describe('constructor', function () {
     it('should take a custom registry on instantiation', function (done) {
-      const taker = new Undertaker(new CustomRegistry());
+      const taker = new Gulp(new CustomRegistry());
       expect(taker.registry()).toBeA(CustomRegistry);
       expect(taker.registry()).toNotBeA(DefaultRegistry);
       done();
     });
 
     it('should default to undertaker-registry if not constructed with custom registry', function (done) {
-      const taker = new Undertaker();
+      const taker = new Gulp();
       expect(taker.registry()).toBeA(DefaultRegistry);
       expect(taker.registry()).toNotBeA(CustomRegistry);
       done();
     });
 
     it('should take a registry that pre-defines tasks', function (done) {
-      const taker = new Undertaker(new CommonRegistry());
+      const taker = new Gulp(new CommonRegistry());
       expect(taker.registry()).toBeA(CommonRegistry);
       expect(taker.registry()).toBeA(DefaultRegistry);
       expect(taker.task('clean')).toBeA('function');
@@ -152,40 +152,40 @@ describe('registry', function () {
       let taker;
 
       function noGet() {
-        taker = new Undertaker(new InvalidRegistry());
+        taker = new Gulp(new InvalidRegistry());
       }
 
       expect(noGet).toThrow('Custom registry must have `get` function');
       InvalidRegistry.prototype.get = noop;
 
       function noSet() {
-        taker = new Undertaker(new InvalidRegistry());
+        taker = new Gulp(new InvalidRegistry());
       }
 
       expect(noSet).toThrow('Custom registry must have `set` function');
       InvalidRegistry.prototype.set = noop;
 
       function noInit() {
-        taker = new Undertaker(new InvalidRegistry());
+        taker = new Gulp(new InvalidRegistry());
       }
 
       expect(noInit).toThrow('Custom registry must have `init` function');
       InvalidRegistry.prototype.init = noop;
 
       function noTasks() {
-        taker = new Undertaker(new InvalidRegistry());
+        taker = new Gulp(new InvalidRegistry());
       }
 
       expect(noTasks).toThrow('Custom registry must have `tasks` function');
       InvalidRegistry.prototype.tasks = noop;
 
-      taker = new Undertaker(new InvalidRegistry());
+      taker = new Gulp(new InvalidRegistry());
       done();
     });
   });
 
   it('does not require the `set` method to return a task', function (done) {
-    const taker = new Undertaker();
+    const taker = new Gulp();
     taker.registry(new SetNoReturnRegistry());
     taker.task('test', noop);
     taker.on('start', function (data) {
@@ -196,7 +196,7 @@ describe('registry', function () {
   });
 
   it('should fail and offer tasks which are close in name', function (done) {
-    const taker = new Undertaker(new CommonRegistry());
+    const taker = new Gulp(new CommonRegistry());
     const customRegistry = new DefaultRegistry();
     taker.registry(customRegistry);
 
