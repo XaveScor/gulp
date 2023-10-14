@@ -117,11 +117,11 @@ class Gulp extends EventEmitter {
       const run = async () => {
         const { parallel, settleParallel } = await import('./bach/index.mjs');
         const create = this._settle ? settleParallel : parallel;
-        return create(normalizedArgs, extensions)
+        return create(normalizedArgs, extensions);
       }
 
-      run().then((fx) => {
-        return fx(done);
+      run().then(([errors, results]) => {
+        done(errors, results)
       });
     };
     const name = '<parallel>';

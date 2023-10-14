@@ -1,5 +1,5 @@
 import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
-import * as bach from '../index.mjs';
+import { settleParallel } from '../settleParallel.mjs';
 
 const { default: expect } = await import('expect');
 
@@ -26,32 +26,30 @@ describe('bach: settleParallel', function () {
     disableDeprecationWarnings();
     resetDeprecationFlags();
   });
-  it('should execute functions in parallel, passing settled results', function (done) {
-    bach.settleParallel([fn1, fn2, fn3])(function (errors, results) {
-      expect(errors).toEqual(null);
-      expect(results).toEqual([1, 2, 3]);
-      done();
-    });
+  it('should execute functions in parallel, passing settled results', async () => {
+    const [errors, results] = await settleParallel([fn1, fn2, fn3]);
+
+    expect(errors).toEqual(null);
+    expect(results).toEqual([1, 2, 3]);
   });
 
-  it('should execute functions in parallel, passing settled errors and results', function (done) {
+  it('should execute functions in parallel, passing settled errors and results', async () => {
     function slowFn(done) {
       setTimeout(function () {
         done(null, 2);
       }, 500);
     }
-    bach.settleParallel([fn1, slowFn, fn3, fnError])(function (errors, results) {
-      expect(errors).toBeAn(Array);
-      expect(errors[0]).toBeAn(Error);
-      expect(results).toEqual([1, 2, 3]);
-      done();
-    });
+    const [errors, results] = await settleParallel([fn1, slowFn, fn3, fnError]);
+
+    expect(errors).toBeAn(Array);
+    expect(errors[0]).toBeAn(Error);
+    expect(results).toEqual([1, 2, 3]);
   });
 
-  it('should take extension points and call them for each function', function (done) {
+  it('should take extension points and call them for each function', async () => {
     const arr = [];
     const fns = [fn1, fn2, fn3];
-    bach.settleParallel([fn1, fn2, fn3], {
+    const [error] = await settleParallel([fn1, fn2, fn3], {
       create: function (fn, idx) {
         expect(fns).toInclude(fn);
         arr[idx] = fn;
@@ -63,10 +61,9 @@ describe('bach: settleParallel', function () {
       after: function (result, storage) {
         expect(storage).toEqual(arr);
       },
-    })(function (error) {
-      expect(error).toEqual(null);
-      expect(arr).toEqual(fns);
     });
-    done();
+
+    expect(error).toEqual(null);
+    expect(arr).toEqual(fns);
   });
 });
