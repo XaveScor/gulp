@@ -7,6 +7,7 @@
 ### Internal changes
 
 - The `Undertaker` internal package does no longer exists. All code moved to `gulp` class (#39) 
+- The `bach` internal package is fully esm (#41)
 
 ## 5.1.2
 
