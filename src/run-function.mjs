@@ -1,4 +1,4 @@
-const { customPromisify } = require('./custom-promisify.js');
+import { customPromisify } from './custom-promisify.mjs';
 
 const cache = new Map();
 async function call(fn) {
@@ -20,7 +20,7 @@ async function call(fn) {
   return result;
 }
 
-async function runFunction(fn, idx, options) {
+export async function runFunction(fn, idx, options) {
   const storage = options.create(fn, idx);
   options.before(storage);
   try {
@@ -36,7 +36,3 @@ async function runFunction(fn, idx, options) {
     throw error;
   }
 }
-
-module.exports = {
-  runFunction,
-};

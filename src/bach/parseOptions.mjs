@@ -3,7 +3,7 @@ const noop = () => {};
  *
  * @param options {Object}
  */
-function parseOptions(options = {}) {
+export function parseOptions(options = {}) {
   if (options.create != null && typeof options.create !== 'function') {
     console.warn('bach: `create` option must be a function, got ' + typeof options.create + ' ' + options.create);
   }
@@ -31,7 +31,3 @@ function parseOptions(options = {}) {
     error,
   };
 }
-
-module.exports = {
-  parseOptions,
-};

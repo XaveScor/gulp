@@ -1,5 +1,5 @@
-const { parseOptions } = await import('./parseArgs.js');
-const { runFunction } = await import('../run-function.js');
+import { parseOptions } from './parseOptions.mjs';
+import { runFunction } from '../run-function.mjs';
 
 export async function settleSeries(funcs, options) {
   const normalizeOptions = parseOptions(options);

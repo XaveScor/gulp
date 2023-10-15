@@ -1,5 +1,5 @@
-const { runFunction } = await import('../run-function.js');
-const { parseOptions } = await import('./parseArgs.js');
+import { parseOptions } from './parseOptions.mjs';
+import { runFunction } from '../run-function.mjs';
 
 export async function parallel(funcs, options) {
   const normalizeOptions = parseOptions(options);

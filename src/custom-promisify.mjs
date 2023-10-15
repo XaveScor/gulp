@@ -1,6 +1,7 @@
-const { promisify } = require('node:util');
-const eos = require('end-of-stream');
-const exhaust = require('stream-exhaust');
+import { promisify } from 'node:util';
+
+const { default: eos } = await import('end-of-stream');
+const { default: exhaust } = await import('stream-exhaust');
 
 /**
  * should work with:
@@ -11,7 +12,7 @@ const exhaust = require('stream-exhaust');
  * @param fn
  * @returns {Function}
  */
-function customPromisify(fn) {
+export function customPromisify(fn) {
   const argsNumber = fn.length;
   return promisify((done) => {
     const fnRes = fn(done);
@@ -30,7 +31,3 @@ function customPromisify(fn) {
       .catch((error) => done(error));
   });
 }
-
-module.exports = {
-  customPromisify,
-};
