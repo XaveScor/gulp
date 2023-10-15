@@ -2,7 +2,6 @@ const { EventEmitter } = require('node:events');
 const DefaultRegistry = require("undertaker-registry");
 const map = require("collection-map");
 const metadata = require("./undertaker/metadata");
-const bach = require("./bach");
 const normalizeArgs = require("./undertaker/normalizeArgs");
 const createExtensions = require("./undertaker/createExtensions");
 const buildTree = require("./undertaker/buildTree");
@@ -63,11 +62,20 @@ class Gulp extends EventEmitter {
   }
 
   series = (...args) => {
-    const create = this._settle ? bach.settleSeries : bach.series;
-
     const normalizedArgs = normalizeArgs(this._registry, args);
     const extensions = createExtensions(this);
-    const fn = create(normalizedArgs, extensions);
+    const fn = (done) => {
+      const run = async () => {
+        const { settleSeries, series } = await import('./bach/index.mjs');
+        const create = this._settle ? settleSeries : series;
+
+        return create(normalizedArgs, extensions);
+      }
+
+      run().then(([error, results]) => {
+        return done(error, results);
+      });
+    };
     const name = '<series>';
 
     metadata.set(fn, {
@@ -103,11 +111,19 @@ class Gulp extends EventEmitter {
   }
 
   parallel = (...args) => {
-    const create = this._settle ? bach.settleParallel : bach.parallel;
-
     const normalizedArgs = normalizeArgs(this._registry, args);
     const extensions = createExtensions(this);
-    const fn = create(normalizedArgs, extensions);
+    const fn = (done) => {
+      const run = async () => {
+        const { parallel, settleParallel } = await import('./bach/index.mjs');
+        const create = this._settle ? settleParallel : parallel;
+        return create(normalizedArgs, extensions);
+      }
+
+      run().then(([errors, results]) => {
+        done(errors, results)
+      });
+    };
     const name = '<parallel>';
 
     metadata.set(fn, {
@@ -120,6 +136,7 @@ class Gulp extends EventEmitter {
         nodes: buildTree(normalizedArgs),
       },
     });
+
     return fn;
   }
 

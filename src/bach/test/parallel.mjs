@@ -1,8 +1,7 @@
 import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+import { parallel } from '../parallel.mjs';
 
 const { default: expect } = await import('expect');
-
-const { default: bach } = await import('../index.js');
 
 function fn1(done) {
   done(null, 1);
@@ -27,26 +26,24 @@ describe('bach: parallel', function () {
     disableDeprecationWarnings();
     resetDeprecationFlags();
   });
-  it('should execute functions in parallel, passing results', function (done) {
-    bach.parallel([fn1, fn2, fn3])(function (error, results) {
-      expect(error).toEqual(null);
-      expect(results).toEqual([1, 2, 3]);
-      done();
-    });
+  it('should execute functions in parallel, passing results', async () => {
+    const [error, results] = await parallel([fn1, fn2, fn3]);
+
+    expect(error).toEqual(null);
+    expect(results).toEqual([1, 2, 3]);
   });
 
-  it('should execute functions in parallel, passing error', function (done) {
-    bach.parallel([fn1, fn3, fnError])(function (error, results) {
-      expect(error).toBeAn(Error);
-      expect(results).toEqual([1, 3, undefined]);
-      done();
-    });
+  it('should execute functions in parallel, passing error', async () => {
+    const [error, results] = await parallel([fn1, fn3, fnError]);
+
+    expect(error).toBeAn(Error);
+    expect(results).toEqual([1, 3, undefined]);
   });
 
-  it('should take extension points and call them for each function', function (done) {
+  it('should take extension points and call them for each function', async () => {
     const arr = [];
     const fns = [fn1, fn2, fn3];
-    bach.parallel([fn1, fn2, fn3], {
+    const [error] = await parallel([fn1, fn2, fn3], {
       create: function (fn, idx) {
         expect(fns).toInclude(fn);
         arr[idx] = fn;
@@ -58,10 +55,9 @@ describe('bach: parallel', function () {
       after: function (result, storage) {
         expect(storage).toEqual(arr);
       },
-    })(function (error) {
-      expect(error).toEqual(null);
-      expect(arr).toEqual(fns);
     });
-    done();
+
+    expect(error).toEqual(null);
+    expect(arr).toEqual(fns);
   });
 });

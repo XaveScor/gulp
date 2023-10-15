@@ -1,8 +1,7 @@
 import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+import { series } from '../series.mjs';
 
 const { default: expect } = await import('expect');
-
-const { default: bach } = await import('../index.js');
 
 function fnSync() {}
 
@@ -29,60 +28,52 @@ describe('bach: series', function () {
     disableDeprecationWarnings();
     resetDeprecationFlags();
   });
-  it('should can take the sync functions without return value', function (done) {
-    bach.series([fnSync])(function (error, results) {
-      expect(error).toEqual(null);
-      expect(results).toEqual([undefined]);
-      done();
-    });
+  it('should can take the sync functions without return value', async () => {
+    const [error, results] = await series([fnSync]);
+
+    expect(error).toEqual(null);
+    expect(results).toEqual([undefined]);
   });
-  it('should can take the sync functions', function (done) {
-    bach.series([fn1])(function (error, results) {
-      expect(error).toEqual(null);
-      expect(results).toEqual([1]);
-      done();
-    });
+  it('should can take the sync functions', async () => {
+    const [error, results] = await series([fn1]);
+
+    expect(error).toEqual(null);
+    expect(results).toEqual([1]);
   });
-  it('should can take the async callback functions', function (done) {
-    bach.series([fn2])(function (error, results) {
-      expect(error).toEqual(null);
-      expect(results).toEqual([2]);
-      done();
-    });
+  it('should can take the async callback functions', async () => {
+    const [error, results] = await series([fn2]);
+
+    expect(error).toEqual(null);
+    expect(results).toEqual([2]);
   });
-  it('should can take the async promised functions', function (done) {
-    bach.series([fn3])(function (error, results) {
-      expect(error).toEqual(null);
-      expect(results).toEqual([3]);
-      done();
-    });
+  it('should can take the async promised functions', async () => {
+    const [error, results] = await series([fn3]);
+
+    expect(error).toEqual(null);
+    expect(results).toEqual([3]);
   });
-  it('should execute functions in series, passing results', function (done) {
-    bach.series([fn1, fn3])(function (error, results) {
-      expect(error).toEqual(null);
-      expect(results).toEqual([1, 3]);
-      done();
-    });
+  it('should execute functions in series, passing results', async () => {
+    const [error, results] = await series([fn1, fn3]);
+
+    expect(error).toEqual(null);
+    expect(results).toEqual([1, 3]);
   });
 
-  it('should execute functions in series, passing error', function (done) {
-    bach.series([fnError])(function (error) {
-      expect(error).toBeAn(Error);
-      done();
-    });
+  it('should execute functions in series, passing error', async () => {
+    const [error] = await series([fnError]);
+    expect(error).toBeAn(Error);
   });
 
-  it('should save the array size of results', function (done) {
-    bach.series([fn1, fn3, fnError, fn2, fnError])(function (error, results) {
-      expect(results).toEqual([1, 3, undefined, undefined, undefined]);
-      done();
-    });
+  it('should save the array size of results', async () => {
+    const [, results] = await series([fn1, fn3, fnError, fn2, fnError]);
+
+    expect(results).toEqual([1, 3, undefined, undefined, undefined]);
   });
 
-  it('should take extension points and call them for each function', function (done) {
+  it('should take extension points and call them for each function', async () => {
     const arr = [];
     const fns = [fn1, fn3];
-    bach.series([fn1, fn3], {
+    const [error] = await series([fn1, fn3], {
       create: function (fn, idx) {
         expect(fns).toInclude(fn);
         arr[idx] = fn;
@@ -94,10 +85,9 @@ describe('bach: series', function () {
       after: function (result, storage) {
         expect(storage).toEqual(arr);
       },
-    })(function (error) {
-      expect(error).toEqual(null);
-      expect(arr).toEqual(fns);
     });
-    done();
+
+    expect(error).toEqual(null);
+    expect(arr).toEqual(fns);
   });
 });
