@@ -1,15 +1,16 @@
 const { EventEmitter } = require('node:events');
-const DefaultRegistry = require("undertaker-registry");
-const map = require("collection-map");
-const metadata = require("./undertaker/metadata");
-const normalizeArgs = require("./undertaker/normalizeArgs");
-const createExtensions = require("./undertaker/createExtensions");
-const buildTree = require("./undertaker/buildTree");
-const retrieveLastRun = require("last-run");
-const validateRegistry = require("./undertaker/validateRegistry");
-const assert = require("assert");
-const vfs = require("vinyl-fs");
+const DefaultRegistry = require('undertaker-registry');
+const map = require('collection-map');
+const metadata = require('./undertaker/metadata');
+const normalizeArgs = require('./undertaker/normalizeArgs');
+const createExtensions = require('./undertaker/createExtensions');
+const buildTree = require('./undertaker/buildTree');
+const retrieveLastRun = require('last-run');
+const validateRegistry = require('./undertaker/validateRegistry');
+const assert = require('assert');
+const vfs = require('vinyl-fs');
 const watch = require('glob-watcher');
+const { declareTask: _declareTask } = require('./undertaker/declare-task.cjs');
 
 class Gulp extends EventEmitter {
   Gulp = Gulp;
@@ -46,7 +47,7 @@ class Gulp extends EventEmitter {
       label: 'Tasks',
       nodes: nodes,
     };
-  }
+  };
 
   task = (name, fn) => {
     if (typeof name === 'function') {
@@ -59,7 +60,7 @@ class Gulp extends EventEmitter {
     }
 
     this._setTask(name, fn);
-  }
+  };
 
   series = (...args) => {
     const normalizedArgs = normalizeArgs(this._registry, args);
@@ -70,7 +71,7 @@ class Gulp extends EventEmitter {
         const create = this._settle ? settleSeries : series;
 
         return create(normalizedArgs, extensions);
-      }
+      };
 
       run().then(([error, results]) => {
         return done(error, results);
@@ -89,7 +90,7 @@ class Gulp extends EventEmitter {
       },
     });
     return fn;
-  }
+  };
 
   lastRun = (task, timeResolution) => {
     if (timeResolution == null) {
@@ -108,7 +109,7 @@ class Gulp extends EventEmitter {
     }
 
     return retrieveLastRun(fn, timeResolution);
-  }
+  };
 
   parallel = (...args) => {
     const normalizedArgs = normalizeArgs(this._registry, args);
@@ -118,10 +119,10 @@ class Gulp extends EventEmitter {
         const { parallel, settleParallel } = await import('./bach/index.mjs');
         const create = this._settle ? settleParallel : parallel;
         return create(normalizedArgs, extensions);
-      }
+      };
 
       run().then(([errors, results]) => {
-        done(errors, results)
+        done(errors, results);
       });
     };
     const name = '<parallel>';
@@ -138,7 +139,7 @@ class Gulp extends EventEmitter {
     });
 
     return fn;
-  }
+  };
 
   registry = (newRegistry) => {
     if (!newRegistry) {
@@ -157,7 +158,7 @@ class Gulp extends EventEmitter {
     }
 
     this._registry.init(this);
-  }
+  };
 
   _getTask(name) {
     return this._registry.get(name);
@@ -168,31 +169,7 @@ class Gulp extends EventEmitter {
     assert(typeof name === 'string', 'Task name must be a string');
     assert(typeof fn === 'function', 'Task function must be specified');
 
-    function taskWrapper(...args) {
-      return fn.apply(this, args);
-    }
-
-    Object.defineProperty(taskWrapper, 'length', { value: fn.length });
-    taskWrapper.unwrap = () => fn;
-    taskWrapper.displayName = name;
-
-    const meta = metadata.get(fn) || {};
-    const nodes = [];
-    if (meta.branch) {
-      nodes.push(meta.tree);
-    }
-
-    const task = this._registry.set(name, taskWrapper) || taskWrapper;
-
-    metadata.set(task, {
-      name: name,
-      orig: fn,
-      tree: {
-        label: name,
-        type: 'task',
-        nodes: nodes,
-      },
-    });
+    _declareTask({ name, fn, ctx: this, runOnce: false });
   }
 
   src = vfs.src.bind(this);
@@ -221,5 +198,5 @@ class Gulp extends EventEmitter {
 }
 
 module.exports = {
-  Gulp
+  Gulp,
 };

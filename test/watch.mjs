@@ -22,7 +22,7 @@ function updateTempFile(path) {
   }, 125);
 }
 
-describe('gulp.watch()', function () {
+describe.only('gulp.watch()', function () {
   beforeEach(() => {
     disableDeprecationWarnings();
     resetDeprecationFlags();
