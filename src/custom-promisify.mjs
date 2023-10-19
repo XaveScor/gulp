@@ -1,33 +1,29 @@
 import { promisify } from 'node:util';
 
 const { default: eos } = await import('end-of-stream');
+const eosP = promisify(eos);
 const { default: exhaust } = await import('stream-exhaust');
 
 /**
  * should work with:
+ * - promises
  * - async functions
- * - callback functions
  * - sync functions with return value
- * - node streams
+ * - sync functions with node streams as return value
  * @param fn
  * @returns {Function}
  */
-export function customPromisify(fn) {
-  const argsNumber = fn.length;
-  return promisify((done) => {
-    const fnRes = fn(done);
-    if (argsNumber > 0) {
-      // it's a callback function.
-      return;
-    }
+export async function customPromisify(fn) {
+  if (fn.then) {
+    return fn;
+  }
 
-    if (fnRes?.on) {
-      eos(exhaust(fnRes), { error: false }, done);
-      return;
-    }
+  const fnRes = await fn();
 
-    Promise.resolve(fnRes)
-      .then(async (result) => done(null, result))
-      .catch((error) => done(error));
-  });
+  if (fnRes?.on) {
+    await eosP(exhaust(fnRes), { error: true });
+    return;
+  }
+
+  return fnRes;
 }
