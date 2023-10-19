@@ -6,7 +6,7 @@ function wait(res) {
   return new Promise((resolve) => setTimeout(() => resolve(res), 10));
 }
 
-describe.only('[DEPRECATED] should be callable', () => {
+describe('[DEPRECATED] should be callable', () => {
   it('series', (done) => {
     jobo.series(
       async () => await wait(1),
