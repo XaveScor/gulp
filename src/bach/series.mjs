@@ -1,5 +1,6 @@
 import { parseOptions } from './parseOptions.mjs';
 import { runFunction } from '../run-function.mjs';
+import { TaskResult } from '../task-result.mjs';
 
 export async function series(funcs, options) {
   const normalizeOptions = parseOptions(options);
@@ -13,5 +14,5 @@ export async function series(funcs, options) {
   } catch (e) {
     error = e;
   }
-  return [error, results];
+  return new TaskResult(results, error);
 }

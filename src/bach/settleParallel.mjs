@@ -1,5 +1,6 @@
 import { parseOptions } from './parseOptions.mjs';
 import { runFunction } from '../run-function.mjs';
+import { TaskResult } from '../task-result.mjs';
 
 export async function settleParallel(funcs, options) {
   const normalizeOptions = parseOptions(options);
@@ -19,5 +20,5 @@ export async function settleParallel(funcs, options) {
   const pureResults = results.filter((r) => r !== undefined);
   const pureErrors = errors.filter((e) => e !== undefined);
 
-  return [pureErrors.length ? pureErrors : null, pureResults.length ? pureResults : null];
+  return new TaskResult(pureResults.length ? pureResults : null, pureErrors.length ? pureErrors : null);
 }
