@@ -3,7 +3,7 @@ import { Readable } from 'node:stream';
 
 const { default: expect } = await import('expect');
 
-describe.only('custom-promisify', () => {
+describe('custom-promisify', () => {
   it('should work with promises', async () => {
     const fn = Promise.resolve(1);
     const result = await customPromisify(fn);
