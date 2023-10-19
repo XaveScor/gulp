@@ -3,7 +3,7 @@ import { disableDeprecationWarnings, resetDeprecationFlags } from '../src/deprec
 const { default: expect } = await import('expect');
 const { default: gulp } = await import('../index.js');
 
-describe('gulp', function () {
+describe('jobo', function () {
   beforeEach(() => {
     disableDeprecationWarnings();
     resetDeprecationFlags();
@@ -57,6 +57,18 @@ describe('gulp', function () {
     it('registry', function (done) {
       expect(gulp.hasOwnProperty('registry')).toEqual(true);
       done();
+    });
+
+    it('declareTask', () => {
+      expect(gulp.hasOwnProperty('declareTask')).toEqual(true);
+    });
+  });
+  describe('.prototype.gulp', () => {
+    it('should not have `declareTask` method', () => {
+      // User should not be able to call `declareTask` on the not root instance.
+      // It can force users to use `declareTask` with unique name instead of `gulp.task`.
+      const localGulp = new gulp.Gulp();
+      expect(localGulp.hasOwnProperty('declareTask')).toEqual(false);
     });
   });
 });
