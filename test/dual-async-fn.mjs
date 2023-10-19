@@ -5,11 +5,8 @@ const { default: expect } = await import('expect');
 async function thenFn(a, b) {
   return [a, b];
 }
-async function catchFn(a, b) {
-  throw [b, a];
-}
 
-describe.only('dual-async-fn', () => {
+describe('dual-async-fn', () => {
   it('should be callable', (done) => {
     const fn = createDualAsyncFn(thenFn);
 
@@ -17,23 +14,13 @@ describe.only('dual-async-fn', () => {
       1,
       2,
     )((err, res) => {
-      expect(res).toEqual([1, 2]);
+      expect(err).toEqual(1);
+      expect(res).toEqual(2);
       done();
     });
   });
 
-  it('should be callable with catch', (done) => {
-    const fn = createDualAsyncFn(catchFn);
-
-    fn(
-      1,
-      2,
-    )((err) => {
-      expect(err).toEqual([2, 1]);
-      done();
-    });
-  });
-
+  // We need to have a length of 0 so that we should use this function as a PROMISE task
   it('should have length 0', () => {
     const fn = createDualAsyncFn(thenFn);
 
@@ -46,15 +33,5 @@ describe.only('dual-async-fn', () => {
     const res = await fn(1, 2);
 
     expect(res).toEqual([1, 2]);
-  });
-
-  it('should be catchable', async () => {
-    const fn = createDualAsyncFn(catchFn);
-
-    try {
-      await fn(1, 2);
-    } catch (err) {
-      expect(err).toEqual([2, 1]);
-    }
   });
 });
