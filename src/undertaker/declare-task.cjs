@@ -23,10 +23,6 @@ class TaskShouldBeNotCallbackError extends Error {
 function declareTask({ name, fn, ctx, runOnce = true }) {
   ctx ??= require('../../index.js');
 
-  if (ctx._getTask(name)) {
-    throw new TaskAlreadyDefinedError(name);
-  }
-
   function taskWrapper(...args) {
     return fn.apply(this, args);
   }
@@ -59,5 +55,6 @@ function declareTask({ name, fn, ctx, runOnce = true }) {
 
 module.exports = {
   declareTask,
+  TaskAlreadyDefinedError,
   TaskShouldBeNotCallbackError,
 };
