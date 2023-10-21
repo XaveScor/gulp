@@ -3,13 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
+import { describe, test, beforeEach, afterEach, expect, vi } from 'vitest';
 import { disableDeprecationWarnings, resetDeprecationFlags, setDeprecationFlags } from '../../deprecation.mjs';
 
-const { default: expect } = await import('expect');
 const { default: vinyl } = await import('vinyl-fs');
 const { default: jshint } = await import('gulp-jshint');
 const { default: through } = await import('through2');
-const { default: sinon } = await import('sinon');
 
 const { Gulp } = await import('../../gulp.cjs');
 
@@ -32,41 +32,40 @@ function noop() {}
 describe('undertaker: integrations', function () {
   let taker;
 
-  beforeEach(function (done) {
+  beforeEach(async () => {
     disableDeprecationWarnings();
     resetDeprecationFlags();
     taker = new Gulp();
-    done();
   });
 
   beforeEach(cleanup);
   afterEach(cleanup);
 
-  it('should handle vinyl streams', function (done) {
+  test('should handle vinyl streams', async () => {
     taker.task('test', function () {
       return vinyl.src('./fixtures/test.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
     });
 
-    taker.parallel('test')(done);
+    await promisify(taker.parallel('test'))();
   });
 
-  it('should exhaust vinyl streams', function (done) {
+  test('should exhaust vinyl streams', async () => {
     taker.task('test', function () {
       return vinyl.src('./fixtures/test.js', { cwd: __dirname });
     });
 
-    taker.parallel('test')(done);
+    await promisify(taker.parallel('test'))();
   });
 
-  it('should lints all piped files', function (done) {
+  test('should lints all piped files', async () => {
     taker.task('test', function () {
       return vinyl.src('./fixtures/test.js', { cwd: __dirname }).pipe(jshint());
     });
 
-    taker.parallel('test')(done);
+    await promisify(taker.parallel('test'))();
   });
 
-  it('should handle a child process return', function (done) {
+  test('should handle a child process return', async () => {
     taker.task('test', function () {
       if (isWindows) {
         return spawn('cmd', ['/c', 'dir']).on('error', noop);
@@ -75,14 +74,14 @@ describe('undertaker: integrations', function () {
       return spawn('ls', ['-lh', __dirname]);
     });
 
-    taker.parallel('test')(done);
+    await promisify(taker.parallel('test'))();
   });
 
-  it('should run dependencies once', function (done) {
+  test('should run dependencies once', async () => {
     setDeprecationFlags({
       taskRunsOnce: true,
     });
-    const fn = sinon.fake();
+    const fn = vi.fn();
 
     taker.task('clean', async () => fn());
 
@@ -100,53 +99,45 @@ describe('undertaker: integrations', function () {
     );
     taker.task('build', taker.series('clean', taker.parallel(['build-this', 'build-that'])));
 
-    taker.parallel('build')(function (err) {
-      expect(fn.callCount).toEqual(1);
-      done(err);
-    });
+    await promisify(taker.parallel('build'))();
+    expect(fn).toHaveBeenCalledOnce();
   });
 
-  it('can use lastRun with vinyl.src `since` option', function (done) {
-    this.timeout(5000);
+  test(
+    'can use lastRun with vinyl.src `since` option',
+    async () => {
+      const fn = vi.fn();
 
-    let count = 0;
+      function setup() {
+        return vinyl.src('./fixtures/test*.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/tmp', { cwd: __dirname }));
+      }
 
-    function setup() {
-      return vinyl.src('./fixtures/test*.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/tmp', { cwd: __dirname }));
-    }
+      function delay(cb) {
+        setTimeout(cb, 2000);
+      }
 
-    function delay(cb) {
-      setTimeout(cb, 2000);
-    }
+      // Some built
+      taker.task('build', function () {
+        return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
+      });
 
-    // Some built
-    taker.task('build', function () {
-      return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
-    });
+      function userEdit(cb) {
+        fs.appendFile(path.join(__dirname, './fixtures/tmp/testMore.js'), ' ', cb);
+      }
 
-    function userEdit(cb) {
-      fs.appendFile(path.join(__dirname, './fixtures/tmp/testMore.js'), ' ', cb);
-    }
+      function countEditedFiles() {
+        return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname, since: taker.lastRun('build') }).pipe(
+          through.obj(function (file, enc, cb) {
+            fn();
+            cb();
+          }),
+        );
+      }
 
-    function countEditedFiles() {
-      return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname, since: taker.lastRun('build') }).pipe(
-        through.obj(function (file, enc, cb) {
-          count++;
-          cb();
-        }),
-      );
-    }
+      await promisify(taker.series(setup, delay, 'build', delay, userEdit, countEditedFiles))();
 
-    taker.series(
-      setup,
-      delay,
-      'build',
-      delay,
-      userEdit,
-      countEditedFiles,
-    )(function (err) {
-      expect(count).toEqual(1);
-      done(err);
-    });
-  });
+      expect(fn).toHaveBeenCalledOnce();
+    },
+    { timeout: 5000 },
+  );
 });
