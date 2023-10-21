@@ -31,7 +31,6 @@ describe('custom-promisify', () => {
       return s;
     };
     const result = await customPromisify(fn);
-    console.warn(result);
     expect(result).toBe(undefined);
   });
 });

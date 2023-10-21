@@ -1,7 +1,5 @@
-import { promisify } from 'node:util';
+import { finished } from 'node:stream/promises';
 
-const { default: eos } = await import('end-of-stream');
-const eosP = promisify(eos);
 const { default: exhaust } = await import('stream-exhaust');
 
 /**
@@ -21,7 +19,7 @@ export async function customPromisify(fn) {
   const fnRes = await fn();
 
   if (fnRes?.on) {
-    await eosP(exhaust(fnRes), { error: true });
+    await finished(exhaust(fnRes), { error: true });
     return;
   }
 
