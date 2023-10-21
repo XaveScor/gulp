@@ -73,7 +73,7 @@ class Gulp extends EventEmitter {
       };
 
       run().then(([error, results]) => {
-        return done(error, results);
+        return done?.(error, results);
       });
     };
     const name = '<series>';
@@ -121,7 +121,7 @@ class Gulp extends EventEmitter {
       };
 
       run().then(([errors, results]) => {
-        done(errors, results);
+        done?.(errors, results);
       });
     };
     const name = '<parallel>';
