@@ -3,7 +3,7 @@ const { default: expect } = await import('expect');
 const { TaskResult } = await import('../src/task-result.cjs');
 const { gulpPromisify } = await import('../src/gulp-promisify.cjs');
 
-describe.only('gulp-promisify', () => {
+describe('gulp-promisify', () => {
   it('should work with sync functions', async () => {
     const fn = () => 1;
 
