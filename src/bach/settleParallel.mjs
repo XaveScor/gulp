@@ -1,6 +1,6 @@
 import { parseOptions } from './parseOptions.mjs';
 import { runFunction } from '../run-function.mjs';
-import { TaskResult } from '../task-result.mjs';
+const { TaskResult } = await import('../task-result.cjs');
 
 export async function settleParallel(funcs, options) {
   const normalizeOptions = parseOptions(options);
