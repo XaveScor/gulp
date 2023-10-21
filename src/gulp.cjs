@@ -1,14 +1,14 @@
 const { EventEmitter } = require('node:events');
-const DefaultRegistry = require("undertaker-registry");
-const map = require("collection-map");
-const metadata = require("./undertaker/metadata");
-const normalizeArgs = require("./undertaker/normalizeArgs");
-const createExtensions = require("./undertaker/createExtensions");
-const buildTree = require("./undertaker/buildTree");
-const retrieveLastRun = require("last-run");
-const validateRegistry = require("./undertaker/validateRegistry");
-const assert = require("assert");
-const vfs = require("vinyl-fs");
+const DefaultRegistry = require('undertaker-registry');
+const map = require('collection-map');
+const metadata = require('./undertaker/metadata');
+const normalizeArgs = require('./undertaker/normalizeArgs');
+const createExtensions = require('./undertaker/createExtensions');
+const buildTree = require('./undertaker/buildTree');
+const retrieveLastRun = require('last-run');
+const validateRegistry = require('./undertaker/validateRegistry');
+const assert = require('assert');
+const vfs = require('vinyl-fs');
 const watch = require('glob-watcher');
 
 class Gulp extends EventEmitter {
@@ -46,7 +46,7 @@ class Gulp extends EventEmitter {
       label: 'Tasks',
       nodes: nodes,
     };
-  }
+  };
 
   task = (name, fn) => {
     if (typeof name === 'function') {
@@ -59,7 +59,7 @@ class Gulp extends EventEmitter {
     }
 
     this._setTask(name, fn);
-  }
+  };
 
   series = (...args) => {
     const normalizedArgs = normalizeArgs(this._registry, args);
@@ -70,7 +70,7 @@ class Gulp extends EventEmitter {
         const create = this._settle ? settleSeries : series;
 
         return create(normalizedArgs, extensions);
-      }
+      };
 
       run().then(([error, results]) => {
         return done(error, results);
@@ -89,7 +89,7 @@ class Gulp extends EventEmitter {
       },
     });
     return fn;
-  }
+  };
 
   lastRun = (task, timeResolution) => {
     if (timeResolution == null) {
@@ -108,7 +108,7 @@ class Gulp extends EventEmitter {
     }
 
     return retrieveLastRun(fn, timeResolution);
-  }
+  };
 
   parallel = (...args) => {
     const normalizedArgs = normalizeArgs(this._registry, args);
@@ -118,10 +118,10 @@ class Gulp extends EventEmitter {
         const { parallel, settleParallel } = await import('./bach/index.mjs');
         const create = this._settle ? settleParallel : parallel;
         return create(normalizedArgs, extensions);
-      }
+      };
 
       run().then(([errors, results]) => {
-        done(errors, results)
+        done(errors, results);
       });
     };
     const name = '<parallel>';
@@ -138,7 +138,7 @@ class Gulp extends EventEmitter {
     });
 
     return fn;
-  }
+  };
 
   registry = (newRegistry) => {
     if (!newRegistry) {
@@ -157,7 +157,7 @@ class Gulp extends EventEmitter {
     }
 
     this._registry.init(this);
-  }
+  };
 
   _getTask(name) {
     return this._registry.get(name);
@@ -221,5 +221,5 @@ class Gulp extends EventEmitter {
 }
 
 module.exports = {
-  Gulp
+  Gulp,
 };
