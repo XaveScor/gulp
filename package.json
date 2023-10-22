@@ -30,12 +30,17 @@
     "test": "vitest"
   },
   "dependencies": {
+    "anymatch": "^2.0.0",
+    "async-done": "^1.2.0",
+    "chokidar": "^3.5.3",
     "collection-map": "^1.0.0",
     "end-of-stream": "^1.4.4",
     "fast-levenshtein": "^1.0.0",
-    "glob-watcher": "^5.0.3",
     "gulp-cli": "^2.2.0",
+    "is-negated-glob": "^1.0.0",
+    "just-debounce": "^1.0.0",
     "last-run": "^1.1.0",
+    "object.defaults": "^1.0.0",
     "stream-exhaust": "^1.0.2",
     "undertaker-registry": "^1.0.0",
     "vinyl-fs": "^3.0.0"
