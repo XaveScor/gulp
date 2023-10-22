@@ -1,6 +1,7 @@
+import { promisify } from 'node:util';
+import { describe, expect, test, beforeEach } from 'vitest';
 import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 
-const { default: expect } = await import('expect');
 const { default: DefaultRegistry } = await import('undertaker-registry');
 const { default: CommonRegistry } = await import('undertaker-common-tasks');
 const { default: MetadataRegistry } = await import('undertaker-task-metadata');
@@ -35,21 +36,19 @@ describe('registry', function () {
     resetDeprecationFlags();
   });
   describe('method', function () {
-    it('should return the current registry when no arguments are given', function (done) {
+    test('should return the current registry when no arguments are given', () => {
       const taker = new Gulp();
       expect(taker.registry()).toEqual(taker._registry);
-      done();
     });
 
-    it('should set the registry to the given registry instance argument', function (done) {
+    test('should set the registry to the given registry instance argument', () => {
       const taker = new Gulp();
       const customRegistry = new CustomRegistry();
       taker.registry(customRegistry);
       expect(taker.registry()).toEqual(customRegistry);
-      done();
     });
 
-    it('should validate the custom registry instance', function (done) {
+    test('should validate the custom registry instance', () => {
       const taker = new Gulp();
       const invalid = new InvalidRegistry();
 
@@ -58,43 +57,43 @@ describe('registry', function () {
       }
 
       expect(invalidSet).toThrow('Custom registry must have `get` function');
-      done();
     });
 
-    it('should transfer all tasks from old registry to new', function (done) {
+    test('should transfer all tasks from old registry to new', () => {
       const taker = new Gulp(new CommonRegistry());
       const customRegistry = new DefaultRegistry();
       taker.registry(customRegistry);
 
-      expect(taker.task('clean')).toBeA('function');
-      expect(taker.task('serve')).toBeA('function');
-      done();
+      expect(taker.task('clean')).toBeTypeOf('function');
+      expect(taker.task('serve')).toBeTypeOf('function');
     });
 
-    it('allows multiple custom registries to used', function (done) {
-      const taker = new Gulp();
-      taker.registry(new CommonRegistry());
+    test('allows multiple custom registries to used', async () => {
+      return new Promise((resolve) => {
+        const taker = new Gulp();
+        taker.registry(new CommonRegistry());
 
-      expect(taker.task('clean')).toBeA('function');
-      expect(taker.task('serve')).toBeA('function');
+        expect(taker.task('clean')).toBeTypeOf('function');
+        expect(taker.task('serve')).toBeTypeOf('function');
 
-      taker.registry(new MetadataRegistry());
-      taker.task('context', function (cb) {
-        expect(this).toEqual({ name: 'context' });
-        cb();
-        done();
+        taker.registry(new MetadataRegistry());
+        taker.task('context', function (cb) {
+          expect(this).toEqual({ name: 'context' });
+          cb();
+          resolve();
+        });
+
+        taker.registry(new DefaultRegistry());
+
+        expect(taker.task('clean')).toBeTypeOf('function');
+        expect(taker.task('serve')).toBeTypeOf('function');
+        expect(taker.task('context')).toBeTypeOf('function');
+
+        taker.series('context')();
       });
-
-      taker.registry(new DefaultRegistry());
-
-      expect(taker.task('clean')).toBeA('function');
-      expect(taker.task('serve')).toBeA('function');
-      expect(taker.task('context')).toBeA('function');
-
-      taker.series('context')();
     });
 
-    it('throws with a descriptive method when constructor is passed', function (done) {
+    test('throws with a descriptive method when constructor is passed', () => {
       const taker = new Gulp();
 
       function ctor() {
@@ -102,52 +101,47 @@ describe('registry', function () {
       }
 
       expect(ctor).toThrow('Custom registries must be instantiated, but it looks like you passed a constructor');
-      done();
     });
 
-    it('calls into the init function after tasks are transferred', function (done) {
+    test('calls into the init function after tasks are transferred', () => {
       const taker = new Gulp(new CommonRegistry());
 
       const ogInit = DefaultRegistry.prototype.init;
 
       DefaultRegistry.prototype.init = function (inst) {
         expect(inst).toEqual(taker);
-        expect(inst.task('clean')).toBeA('function');
-        expect(inst.task('serve')).toBeA('function');
+        expect(inst.task('clean')).toBeTypeOf('function');
+        expect(inst.task('serve')).toBeTypeOf('function');
       };
 
       taker.registry(new DefaultRegistry());
 
       DefaultRegistry.prototype.init = ogInit;
-      done();
     });
   });
 
   describe('constructor', function () {
-    it('should take a custom registry on instantiation', function (done) {
+    test('should take a custom registry on instantiation', () => {
       const taker = new Gulp(new CustomRegistry());
-      expect(taker.registry()).toBeA(CustomRegistry);
-      expect(taker.registry()).toNotBeA(DefaultRegistry);
-      done();
+      expect(taker.registry()).toBeInstanceOf(CustomRegistry);
+      expect(taker.registry()).not.toBeInstanceOf(DefaultRegistry);
     });
 
-    it('should default to undertaker-registry if not constructed with custom registry', function (done) {
+    test('should default to undertaker-registry if not constructed with custom registry', () => {
       const taker = new Gulp();
-      expect(taker.registry()).toBeA(DefaultRegistry);
-      expect(taker.registry()).toNotBeA(CustomRegistry);
-      done();
+      expect(taker.registry()).toBeInstanceOf(DefaultRegistry);
+      expect(taker.registry()).not.toBeInstanceOf(CustomRegistry);
     });
 
-    it('should take a registry that pre-defines tasks', function (done) {
+    test('should take a registry that pre-defines tasks', () => {
       const taker = new Gulp(new CommonRegistry());
-      expect(taker.registry()).toBeA(CommonRegistry);
-      expect(taker.registry()).toBeA(DefaultRegistry);
-      expect(taker.task('clean')).toBeA('function');
-      expect(taker.task('serve')).toBeA('function');
-      done();
+      expect(taker.registry()).toBeInstanceOf(CommonRegistry);
+      expect(taker.registry()).toBeInstanceOf(DefaultRegistry);
+      expect(taker.task('clean')).toBeTypeOf('function');
+      expect(taker.task('serve')).toBeTypeOf('function');
     });
 
-    it('should throw upon invalid registry', function (done) {
+    test('should throw upon invalid registry', () => {
       /* eslint no-unused-vars: 0 */
       let taker;
 
@@ -180,22 +174,23 @@ describe('registry', function () {
       InvalidRegistry.prototype.tasks = noop;
 
       taker = new Gulp(new InvalidRegistry());
-      done();
     });
   });
 
-  it('does not require the `set` method to return a task', function (done) {
-    const taker = new Gulp();
-    taker.registry(new SetNoReturnRegistry());
-    taker.task('test', noop);
-    taker.on('start', function (data) {
-      expect(data.name).toEqual('test');
-      done();
+  test('does not require the `set` method to return a task', async () => {
+    return new Promise((resolve) => {
+      const taker = new Gulp();
+      taker.registry(new SetNoReturnRegistry());
+      taker.task('test', noop);
+      taker.on('start', function (data) {
+        expect(data.name).toEqual('test');
+        resolve();
+      });
+      taker.series('test')();
     });
-    taker.series('test')();
   });
 
-  it('should fail and offer tasks which are close in name', function (done) {
+  test('should fail and offer tasks which are close in name', () => {
     const taker = new Gulp(new CommonRegistry());
     const customRegistry = new DefaultRegistry();
     taker.registry(customRegistry);
@@ -205,6 +200,5 @@ describe('registry', function () {
     }
 
     expect(fail).toThrow(/Task never defined: clear - did you mean\? clean/);
-    done();
   });
 });

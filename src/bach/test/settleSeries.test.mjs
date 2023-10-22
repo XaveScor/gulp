@@ -1,7 +1,7 @@
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
-import { settleParallel } from '../settleParallel.mjs';
+import { describe, beforeEach, expect, test } from 'vitest';
 
-const { default: expect } = await import('expect');
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+import { settleSeries } from '../settleSeries.mjs';
 
 function fn1(done) {
   done(null, 1);
@@ -21,37 +21,37 @@ function fnError(done) {
   done(new Error('An Error Occurred'));
 }
 
-describe('bach: settleParallel', function () {
+describe('settleSeries', function () {
   beforeEach(() => {
     disableDeprecationWarnings();
     resetDeprecationFlags();
   });
-  it('should execute functions in parallel, passing settled results', async () => {
-    const [errors, results] = await settleParallel([fn1, fn2, fn3]);
+  test('should execute functions in series, passing settled results', async () => {
+    const [errors, results] = await settleSeries([fn1, fn2, fn3]);
 
     expect(errors).toEqual(null);
     expect(results).toEqual([1, 2, 3]);
   });
 
-  it('should execute functions in parallel, passing settled errors and results', async () => {
+  test('should execute functions in series, passing settled errors and results', async () => {
     function slowFn(done) {
       setTimeout(function () {
         done(null, 2);
       }, 500);
     }
-    const [errors, results] = await settleParallel([fn1, slowFn, fn3, fnError]);
+    const [errors, results] = await settleSeries([fn1, slowFn, fn3, fnError]);
 
-    expect(errors).toBeAn(Array);
-    expect(errors[0]).toBeAn(Error);
+    expect(Array.isArray(errors)).toBeTruthy();
+    expect(errors[0]).toBeInstanceOf(Error);
     expect(results).toEqual([1, 2, 3]);
   });
 
-  it('should take extension points and call them for each function', async () => {
+  test('should take extension points and call them for each function', async () => {
     const arr = [];
     const fns = [fn1, fn2, fn3];
-    const [error] = await settleParallel([fn1, fn2, fn3], {
+    const [error] = await settleSeries([fn1, fn2, fn3], {
       create: function (fn, idx) {
-        expect(fns).toInclude(fn);
+        expect(fns.includes(fn)).toBeTruthy();
         arr[idx] = fn;
         return arr;
       },

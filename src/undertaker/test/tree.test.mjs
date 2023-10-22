@@ -1,6 +1,6 @@
+import { promisify } from 'node:util';
+import { describe, expect, test, beforeEach } from 'vitest';
 import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
-
-const { default: expect } = await import('expect');
 
 const { Gulp } = await import('../../gulp.cjs');
 const { default: simple } = await import('./fixtures/taskTree/simple.js');
@@ -15,16 +15,15 @@ function noop(done) {
 }
 
 describe('tree', function () {
-  var taker;
+  let taker;
 
-  beforeEach(function (done) {
+  beforeEach(async () => {
     disableDeprecationWarnings();
     resetDeprecationFlags();
     taker = new Gulp();
-    done();
   });
 
-  it('should return a simple tree by default', function (done) {
+  test('should return a simple tree by default', () => {
     taker.task('test1', function (cb) {
       cb();
     });
@@ -38,8 +37,8 @@ describe('tree', function () {
       cb();
     });
 
-    var ser = taker.series('test1', 'test2');
-    var anon = function (cb) {
+    const ser = taker.series('test1', 'test2');
+    const anon = function (cb) {
       cb();
     };
     anon.displayName = '<display name>';
@@ -50,13 +49,12 @@ describe('tree', function () {
     taker.task('serpar2', taker.series(ser, anon));
     taker.task(anon);
 
-    var tree = taker.tree();
+    const tree = taker.tree();
 
     expect(tree).toEqual(simple);
-    done();
   });
 
-  it('should form a 1 level tree', function (done) {
+  test('should form a 1 level tree', () => {
     taker.task('fn1', function (cb) {
       cb();
     });
@@ -64,13 +62,12 @@ describe('tree', function () {
       cb();
     });
 
-    var tree = taker.tree({ deep: true });
+    const tree = taker.tree({ deep: true });
 
     expect(tree).toEqual(singleLevel);
-    done();
   });
 
-  it('should form a 2 level nested tree', function (done) {
+  test('should form a 2 level nested tree', () => {
     taker.task('fn1', function (cb) {
       cb();
     });
@@ -79,13 +76,12 @@ describe('tree', function () {
     });
     taker.task('fn3', taker.series('fn1', 'fn2'));
 
-    var tree = taker.tree({ deep: true });
+    const tree = taker.tree({ deep: true });
 
     expect(tree).toEqual(doubleLevel);
-    done();
   });
 
-  it('should form a 3 level nested tree', function (done) {
+  test('should form a 3 level nested tree', () => {
     taker.task(
       'fn1',
       taker.parallel(function (cb) {
@@ -100,14 +96,13 @@ describe('tree', function () {
     );
     taker.task('fn3', taker.series('fn1', 'fn2'));
 
-    var tree = taker.tree({ deep: true });
+    const tree = taker.tree({ deep: true });
 
     expect(tree).toEqual(tripleLevel);
-    done();
   });
 
-  it('should use the proper labels for aliased tasks (simple)', function (done) {
-    var anon = function (cb) {
+  test('should use the proper labels for aliased tasks (simple)', () => {
+    const anon = function (cb) {
       cb();
     };
     taker.task(noop);
@@ -116,13 +111,12 @@ describe('tree', function () {
     taker.task('fn3', anon);
     taker.task('fn4', taker.task('fn3'));
 
-    var tree = taker.tree({ deep: true });
+    const tree = taker.tree({ deep: true });
 
     expect(tree).toEqual(aliasSimple);
-    done();
   });
 
-  it('should use the proper labels for aliased tasks (nested)', function (done) {
+  test('should use the proper labels for aliased tasks (nested)', () => {
     taker.task(noop);
     taker.task('fn1', noop);
     taker.task('fn2', taker.task('noop'));
@@ -154,9 +148,8 @@ describe('tree', function () {
       ),
     );
 
-    var tree = taker.tree({ deep: true });
+    const tree = taker.tree({ deep: true });
 
     expect(tree).toEqual(aliasNested);
-    done();
   });
 });
