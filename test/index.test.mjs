@@ -1,6 +1,6 @@
+import { describe, test, beforeEach, expect } from 'vitest';
 import { disableDeprecationWarnings, resetDeprecationFlags } from '../src/deprecation.mjs';
 
-const { default: expect } = await import('expect');
 const { default: gulp } = await import('../index.js');
 
 describe('gulp', function () {
@@ -8,55 +8,45 @@ describe('gulp', function () {
     disableDeprecationWarnings();
     resetDeprecationFlags();
   });
-  describe('hasOwnProperty', function () {
-    it('src', function (done) {
+  describe('hasOwnProperty', () => {
+    test('src', () => {
       expect(gulp.hasOwnProperty('src')).toEqual(true);
-      done();
     });
 
-    it('dest', function (done) {
+    test('dest', () => {
       expect(gulp.hasOwnProperty('dest')).toEqual(true);
-      done();
     });
 
-    it('symlink', function (done) {
+    test('symlink', () => {
       expect(gulp.hasOwnProperty('symlink')).toEqual(true);
-      done();
     });
 
-    it('watch', function (done) {
+    test('watch', () => {
       expect(gulp.hasOwnProperty('watch')).toEqual(true);
-      done();
     });
 
-    it('task', function (done) {
+    test('task', () => {
       expect(gulp.hasOwnProperty('task')).toEqual(true);
-      done();
     });
 
-    it('series', function (done) {
+    test('series', () => {
       expect(gulp.hasOwnProperty('series')).toEqual(true);
-      done();
     });
 
-    it('parallel', function (done) {
+    test('parallel', () => {
       expect(gulp.hasOwnProperty('parallel')).toEqual(true);
-      done();
     });
 
-    it('tree', function (done) {
+    test('tree', () => {
       expect(gulp.hasOwnProperty('tree')).toEqual(true);
-      done();
     });
 
-    it('lastRun', function (done) {
+    test('lastRun', () => {
       expect(gulp.hasOwnProperty('lastRun')).toEqual(true);
-      done();
     });
 
-    it('registry', function (done) {
+    test('registry', () => {
       expect(gulp.hasOwnProperty('registry')).toEqual(true);
-      done();
     });
   });
 });
