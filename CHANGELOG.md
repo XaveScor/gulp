@@ -6,6 +6,7 @@
 
 ### Internal changes
 
+- The `glob-watcher` inlined (#next)
 - The `Undertaker` internal package does no longer exists. All code moved to `gulp` class (#39) 
 - The `bach` internal package is fully esm (#41)
 
