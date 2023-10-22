@@ -27,7 +27,7 @@
     "gulp": "./bin/gulp.js"
   },
   "scripts": {
-    "test": "mocha **/test/*.mjs"
+    "test": "vitest"
   },
   "dependencies": {
     "collection-map": "^1.0.0",
@@ -41,14 +41,12 @@
     "vinyl-fs": "^3.0.0"
   },
   "devDependencies": {
-    "expect": "^1.20.2",
     "gulp-jshint": "^1.8.4",
-    "mocha": "^10.2.0",
     "prettier": "^3.0.3",
-    "sinon": "^16.0.0",
     "through2": "^2.0.0",
     "undertaker-common-tasks": "^1.0.0",
-    "undertaker-task-metadata": "^1.0.0"
+    "undertaker-task-metadata": "^1.0.0",
+    "vitest": "^0.34.6"
   },
   "keywords": [
     "build",
