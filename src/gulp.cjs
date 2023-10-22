@@ -9,7 +9,7 @@ const retrieveLastRun = require('last-run');
 const validateRegistry = require('./undertaker/validateRegistry');
 const assert = require('assert');
 const vfs = require('vinyl-fs');
-const watch = require('./watcher/index.cjs');
+const { watch } = require('./watcher/index.cjs');
 
 class Gulp extends EventEmitter {
   Gulp = Gulp;

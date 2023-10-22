@@ -40,7 +40,6 @@
     "is-negated-glob": "^1.0.0",
     "just-debounce": "^1.0.0",
     "last-run": "^1.1.0",
-    "normalize-path": "^3.0.0",
     "object.defaults": "^1.0.0",
     "stream-exhaust": "^1.0.2",
     "undertaker-registry": "^1.0.0",

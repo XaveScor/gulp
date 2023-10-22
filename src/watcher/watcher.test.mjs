@@ -4,7 +4,6 @@ import os from 'node:os';
 import { describe, expect, test, beforeEach, afterEach, vi } from 'vitest';
 
 const { default: through } = await import('through2');
-const { default: normalizePath } = await import('normalize-path');
 
 const { watch } = await import('./index.cjs');
 
@@ -36,8 +35,8 @@ describe('glob-watcher', () => {
     fs.mkdirSync(outDir);
     outFile1 = path.join(outDir, 'changed.js');
     outFile2 = path.join(outDir, 'added.js');
-    outGlob = normalizePath(path.join(outDir, globPattern));
-    singleAdd = normalizePath(outFile1);
+    outGlob = path.normalize(path.join(outDir, globPattern));
+    singleAdd = path.normalize(outFile1);
     ignoreGlob = '!' + singleAdd;
     fs.writeFileSync(outFile1, 'hello world');
   });

@@ -1,10 +1,10 @@
+const path = require('node:path');
 var chokidar = require('chokidar');
 var debounce = require('just-debounce');
 var asyncDone = require('async-done');
 var defaults = require('object.defaults/immutable');
 var isNegatedGlob = require('is-negated-glob');
 var anymatch = require('anymatch');
-var normalize = require('normalize-path');
 
 var defaultOpts = {
   delay: 200,
@@ -74,7 +74,7 @@ function watch(glob, options, cb) {
 
   function joinCwd(glob) {
     if (glob && opt.cwd) {
-      return normalize(opt.cwd + '/' + glob);
+      return path.normalize(opt.cwd + '/' + glob);
     }
 
     return glob;
