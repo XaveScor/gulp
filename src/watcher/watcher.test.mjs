@@ -46,7 +46,9 @@ describe('glob-watcher', () => {
   });
 
   test('only requires a glob and returns watcher', async () => {
-    const watcher = watch(outGlob);
+    const watcher = watch({
+      glob: outGlob,
+    });
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
     watcher.on('ready', changeFile);
@@ -62,7 +64,9 @@ describe('glob-watcher', () => {
   });
 
   test('picks up added files', () => {
-    const watcher = watch(outGlob);
+    const watcher = watch({
+      glob: outGlob,
+    });
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
     watcher.on('ready', addFile);
@@ -78,7 +82,10 @@ describe('glob-watcher', () => {
   });
 
   test('works with OS-specific cwd', async () => {
-    const watcher = watch(globPattern, { cwd: tmpDir });
+    const watcher = watch({
+      glob: globPattern,
+      options: { cwd: tmpDir },
+    });
 
     return new Promise((resolve) => {
       watcher.once('change', (filepath) => {
@@ -98,9 +105,12 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, (cb) => {
-        cb();
-        resolve();
+      const watcher = watch({
+        glob: outGlob,
+        callback(cb) {
+          cb();
+          resolve();
+        },
       });
       finalizers.push(() => watcher.close());
 
@@ -115,9 +125,12 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, (cb) => {
-        cb();
-        resolve();
+      const watcher = watch({
+        glob: outGlob,
+        callback(cb) {
+          cb();
+          resolve();
+        },
       });
       finalizers.push(() => watcher.close());
 
@@ -133,18 +146,21 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, (cb) => {
-        runs++;
-        if (runs === 1) {
-          setTimeout(() => {
-            expect(runs).toEqual(1);
+      const watcher = watch({
+        glob: outGlob,
+        callback(cb) {
+          runs++;
+          if (runs === 1) {
+            setTimeout(() => {
+              expect(runs).toEqual(1);
+              cb();
+            }, timeout * 3);
+          }
+          if (runs === 2) {
             cb();
-          }, timeout * 3);
-        }
-        if (runs === 2) {
-          cb();
-          resolve();
-        }
+            resolve();
+          }
+        },
       });
       finalizers.push(() => watcher.close());
 
@@ -166,20 +182,23 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, (cb) => {
-        runs++;
-        if (runs === 1) {
-          const stream = through();
-          setTimeout(() => {
-            expect(runs).toEqual(1);
-            stream.end();
-          }, timeout * 3);
-          return stream;
-        }
-        if (runs === 2) {
-          cb();
-          resolve();
-        }
+      const watcher = watch({
+        glob: outGlob,
+        callback(cb) {
+          runs++;
+          if (runs === 1) {
+            const stream = through();
+            setTimeout(() => {
+              expect(runs).toEqual(1);
+              stream.end();
+            }, timeout * 3);
+            return stream;
+          }
+          if (runs === 2) {
+            cb();
+            resolve();
+          }
+        },
       });
       finalizers.push(() => watcher.close());
 
@@ -199,8 +218,11 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, (cb) => {
-        cb(expectedError);
+      const watcher = watch({
+        glob: outGlob,
+        callback(cb) {
+          cb(expectedError);
+        },
       });
       finalizers.push(() => watcher.close());
 
@@ -221,9 +243,12 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, (cb) => {
-        cb(expectedError);
-        setTimeout(resolve, timeout * 3);
+      const watcher = watch({
+        glob: outGlob,
+        callback(cb) {
+          cb(expectedError);
+          setTimeout(resolve, timeout * 3);
+        },
       });
       finalizers.push(() => watcher.close());
 
@@ -239,14 +264,18 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, { queue: false }, (cb) => {
-        runs++;
-        setTimeout(() => {
-          // Expect 1 because run 2 is never queued
-          expect(runs).toEqual(1);
-          cb();
-          resolve();
-        }, timeout * 3);
+      const watcher = watch({
+        glob: outGlob,
+        options: { queue: false },
+        callback(cb) {
+          runs++;
+          setTimeout(() => {
+            // Expect 1 because run 2 is never queued
+            expect(runs).toEqual(1);
+            cb();
+            resolve();
+          }, timeout * 3);
+        },
       });
       finalizers.push(() => watcher.close());
 
@@ -266,19 +295,23 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, { delay: timeout / 2 }, (cb) => {
-        runs++;
-        if (runs === 1) {
-          setTimeout(function () {
-            expect(runs).toEqual(1);
+      const watcher = watch({
+        glob: outGlob,
+        options: { delay: timeout / 2 },
+        callback(cb) {
+          runs++;
+          if (runs === 1) {
+            setTimeout(function () {
+              expect(runs).toEqual(1);
+              cb();
+            }, timeout * 3);
+          }
+          if (runs === 2) {
+            expect(runs).toEqual(2);
             cb();
-          }, timeout * 3);
-        }
-        if (runs === 2) {
-          expect(runs).toEqual(2);
-          cb();
-          resolve();
-        }
+            resolve();
+          }
+        },
       });
       finalizers.push(() => watcher.close());
 
@@ -299,9 +332,13 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, { ignoreInitial: false }, (cb) => {
-        cb();
-        resolve();
+      const watcher = watch({
+        glob: outGlob,
+        options: { ignoreInitial: false },
+        callback(cb) {
+          cb();
+          resolve();
+        },
       });
       finalizers.push(() => watcher.close());
     }).finally(() => {
@@ -313,9 +350,13 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch(outGlob, { ignoreInitial: null }, (cb) => {
-        cb();
-        resolve();
+      const watcher = watch({
+        glob: outGlob,
+        options: { ignoreInitial: null },
+        callback(cb) {
+          cb();
+          resolve();
+        },
       });
       finalizers.push(() => watcher.close());
 
@@ -340,7 +381,11 @@ describe('glob-watcher', () => {
           throw new Error('`Add` handler called for `change` event');
         });
 
-      const watcher = watch(outGlob, { events: 'add' }, spy);
+      const watcher = watch({
+        glob: outGlob,
+        options: { events: 'change' },
+        callback: spy,
+      });
       finalizers.push(() => watcher.close());
 
       watcher.on('ready', addFile);
@@ -357,7 +402,11 @@ describe('glob-watcher', () => {
         throw new Error('`Add`/`Unlink` handler called for `change` event');
       });
 
-      const watcher = watch(outGlob, { events: ['add', 'unlink'] }, spy);
+      const watcher = watch({
+        glob: outGlob,
+        options: { events: ['add', 'unlink'] },
+        callback: spy,
+      });
       finalizers.push(() => watcher.close());
 
       watcher.on('ready', () => {
@@ -373,7 +422,9 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve, reject) => {
-      const watcher = watch([outGlob, ignoreGlob]);
+      const watcher = watch({
+        glob: [outGlob, ignoreGlob],
+      });
       finalizers.push(() => watcher.close());
 
       watcher.once('change', reject);
@@ -391,7 +442,9 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve) => {
-      const watcher = watch([outGlob, ignoreGlob, singleAdd]);
+      const watcher = watch({
+        glob: [outGlob, ignoreGlob, singleAdd],
+      });
       finalizers.push(() => watcher.close());
 
       watcher.once('change', (filepath) => {
@@ -409,7 +462,9 @@ describe('glob-watcher', () => {
   test('does not mutate the globs array', () => {
     const globs = [outGlob, ignoreGlob, singleAdd];
 
-    const watcher = watch(globs);
+    const watcher = watch({
+      glob: globs,
+    });
     watcher.close();
 
     expect(globs[0]).toEqual(outGlob);
@@ -422,8 +477,9 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve, reject) => {
-      const watcher = watch(outGlob, {
-        ignored: ignored,
+      const watcher = watch({
+        glob: outGlob,
+        options: { ignored },
       });
       finalizers.push(() => watcher.close());
 
@@ -446,7 +502,10 @@ describe('glob-watcher', () => {
     const finalizers = [];
 
     return new Promise((resolve, reject) => {
-      const watcher = watch(['fixtures/**', '!fixtures/*.js'], { cwd: 'test' });
+      const watcher = watch({
+        glob: ['fixtures/**', '!fixtures/*.js'],
+        options: { cwd: 'test' },
+      });
       finalizers.push(() => watcher.close());
 
       watcher.once('change', reject);

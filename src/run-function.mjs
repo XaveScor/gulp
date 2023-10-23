@@ -1,4 +1,4 @@
-import { customPromisify } from './custom-promisify.mjs';
+const { customPromisify } = await import('./custom-promisify.cjs');
 
 const cache = new Map();
 async function call(fn) {
