@@ -6,6 +6,8 @@
 
 ### Internal changes
 
+- All tests ported to vitest (#43)
+- The `watch` internal package is simplified (#48)
 - The `glob-watcher` inlined (#45)
 - The `Undertaker` internal package does no longer exists. All code moved to `gulp` class (#39) 
 - The `bach` internal package is fully esm (#41)
