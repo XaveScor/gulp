@@ -6,6 +6,7 @@
 
 ### Internal changes
 
+- All `watch` tests are finished successfully (#49)
 - All tests ported to vitest (#43)
 - The `watch` internal package is simplified (#48)
 - The `glob-watcher` inlined (#45)
