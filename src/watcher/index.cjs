@@ -1,10 +1,11 @@
 const path = require('node:path');
 var chokidar = require('chokidar');
 var debounce = require('just-debounce');
-var asyncDone = require('async-done');
 var defaults = require('object.defaults/immutable');
 var isNegatedGlob = require('is-negated-glob');
 var anymatch = require('anymatch');
+const { createRunQueue } = require('./run-queue.cjs');
+const { customPromisify } = require('../custom-promisify.cjs');
 
 var defaultOpts = {
   delay: 200,
@@ -48,9 +49,6 @@ function watch(glob, options, cb) {
   } else {
     glob = [glob];
   }
-
-  var queued = false;
-  var running = false;
 
   // These use sparse arrays to keep track of the index in the
   // original globs array
@@ -100,45 +98,26 @@ function watch(glob, options, cb) {
 
     opt.ignored = [].concat(opt.ignored, shouldBeIgnored);
   }
-  var watcher = chokidar.watch(toWatch, opt);
+  const watcher = chokidar.watch(toWatch, opt);
 
-  function runComplete(err) {
-    running = false;
-
-    if (err && hasErrorListener(watcher)) {
-      watcher.emit('error', err);
-    }
-
-    // If we have a run queued, start onChange again
-    if (queued) {
-      queued = false;
-      onChange();
-    }
-  }
-
-  function onChange() {
-    if (running) {
-      if (opt.queue) {
-        queued = true;
-      }
-      return;
-    }
-
-    running = true;
-    asyncDone(cb, runComplete);
-  }
-
-  var fn;
   if (typeof cb === 'function') {
-    fn = debounce(onChange, opt.delay);
-  }
+    const queue = createRunQueue(opt.queue);
 
-  function watchEvent(eventName) {
-    watcher.on(eventName, fn);
-  }
+    const awaitableCallback = customPromisify(cb);
 
-  if (fn) {
-    opt.events.forEach(watchEvent);
+    function onChange() {
+      queue.add(awaitableCallback, (err) => {
+        if (hasErrorListener(watcher)) {
+          watcher.emit('error', err);
+        }
+      });
+    }
+
+    const fn = debounce(onChange, opt.delay);
+
+    for (const eventName of opt.events) {
+      watcher.on(eventName, fn);
+    }
   }
 
   return watcher;
