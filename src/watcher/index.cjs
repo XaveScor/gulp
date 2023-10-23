@@ -10,6 +10,10 @@ var defaultOpts = {
   ignored: [],
   ignoreInitial: true,
   queue: true,
+  awaitWriteFinish: {
+    stabilityThreshold: 50,
+    pollInterval: 100,
+  },
 };
 
 function listenerCount(ee, evtName) {
