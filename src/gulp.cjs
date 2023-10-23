@@ -209,14 +209,16 @@ class Gulp extends EventEmitter {
       opt = {};
     }
 
-    opt = opt || {};
-
     let fn;
     if (typeof task === 'function') {
       fn = this.parallel(task);
     }
 
-    return watch(glob, opt, fn);
+    return watch({
+      glob,
+      options: opt,
+      callback: fn,
+    });
   };
 }
 

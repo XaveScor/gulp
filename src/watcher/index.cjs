@@ -31,13 +31,10 @@ function exists(val) {
   return val != null;
 }
 
-function watch(glob, options, cb) {
-  if (typeof options === 'function') {
-    cb = options;
-    options = {};
-  }
+function noop() {}
 
-  var opt = defaults(options, defaultOpts);
+function watch({ glob, options = {}, callback = noop }) {
+  const opt = defaults(options, defaultOpts);
 
   if (!Array.isArray(opt.events)) {
     opt.events = [opt.events];
@@ -45,7 +42,7 @@ function watch(glob, options, cb) {
 
   if (Array.isArray(glob)) {
     // We slice so we don't mutate the passed globs array
-    glob = glob.slice();
+    glob = [...glob];
   } else {
     glob = [glob];
   }
@@ -100,24 +97,21 @@ function watch(glob, options, cb) {
   }
   const watcher = chokidar.watch(toWatch, opt);
 
-  if (typeof cb === 'function') {
-    const queue = createRunQueue(opt.queue);
+  const queue = createRunQueue(opt.queue);
+  const awaitableCallback = customPromisify(callback);
 
-    const awaitableCallback = customPromisify(cb);
+  function onChange() {
+    queue.add(awaitableCallback, (err) => {
+      if (hasErrorListener(watcher)) {
+        watcher.emit('error', err);
+      }
+    });
+  }
 
-    function onChange() {
-      queue.add(awaitableCallback, (err) => {
-        if (hasErrorListener(watcher)) {
-          watcher.emit('error', err);
-        }
-      });
-    }
+  const fn = debounce(onChange, opt.delay);
 
-    const fn = debounce(onChange, opt.delay);
-
-    for (const eventName of opt.events) {
-      watcher.on(eventName, fn);
-    }
+  for (const eventName of opt.events) {
+    watcher.on(eventName, fn);
   }
 
   return watcher;
