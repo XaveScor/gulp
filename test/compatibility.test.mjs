@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 
 const { default: jobo } = await import('../index.js');
 
@@ -19,5 +19,17 @@ describe('compatibility', async () => {
         resolve();
       });
     });
+  });
+
+  test('task runs more than once', async () => {
+    const fn = vi.fn();
+
+    jobo.task('test', async () => fn());
+
+    await new Promise((resolve) => {
+      jobo.series('test', 'test', 'test')(resolve);
+    });
+
+    expect(fn).toBeCalledTimes(3);
   });
 });
