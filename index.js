@@ -1,11 +1,6 @@
-const { Gulp } = require('./src/gulp.cjs');
+const { Jobo } = require('./src/jobo.cjs');
 
-const inst = new Gulp();
-
-inst.setDeprecationFlags = async (flags) => {
-  const deprecation = await import('./src/deprecation.mjs');
-  deprecation.setDeprecationFlags(flags);
-};
+const inst = new Jobo();
 
 (async () => {
   const deprecation = await import('./src/deprecation.mjs');
