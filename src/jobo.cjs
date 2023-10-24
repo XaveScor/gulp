@@ -10,7 +10,7 @@ class Jobo extends Gulp {
       throw new CallbackTaskIsNotAllowedError(name);
     }
 
-    _declareTask({ name, fn, registry: this._registry });
+    _declareTask({ name, fn, registry: this._registry, once: true });
 
     return name;
   };

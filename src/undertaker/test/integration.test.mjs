@@ -5,7 +5,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { describe, test, beforeEach, afterEach, expect, vi } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags, setDeprecationFlags } from '../../deprecation.mjs';
+import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 
 const { default: vinyl } = await import('vinyl-fs');
 const { default: jshint } = await import('gulp-jshint');
@@ -75,32 +75,6 @@ describe('undertaker: integrations', function () {
     });
 
     await promisify(taker.parallel('test'))();
-  });
-
-  test('should run dependencies once', async () => {
-    setDeprecationFlags({
-      taskRunsOnce: true,
-    });
-    const fn = vi.fn();
-
-    taker.task('clean', async () => fn());
-
-    taker.task(
-      'build-this',
-      taker.series('clean', function (cb) {
-        cb();
-      }),
-    );
-    taker.task(
-      'build-that',
-      taker.series('clean', function (cb) {
-        cb();
-      }),
-    );
-    taker.task('build', taker.series('clean', taker.parallel(['build-this', 'build-that'])));
-
-    await promisify(taker.parallel('build'))();
-    expect(fn).toHaveBeenCalledOnce();
   });
 
   test(

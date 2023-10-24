@@ -169,7 +169,7 @@ class Gulp extends EventEmitter {
     assert(typeof name === 'string', 'Task name must be a string');
     assert(typeof fn === 'function', 'Task function must be specified');
 
-    declareTask({ name, fn, registry: this._registry });
+    declareTask({ name, fn, registry: this._registry, once: false });
   }
 
   src = vfs.src.bind(this);

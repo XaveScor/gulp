@@ -13,7 +13,7 @@ class CallbackTaskIsNotAllowedError extends Error {
   }
 }
 
-function declareTask({ name, fn, registry }) {
+function declareTask({ name, fn, registry, once }) {
   function taskWrapper(...args) {
     return fn.apply(this, args);
   }
@@ -21,6 +21,7 @@ function declareTask({ name, fn, registry }) {
   Object.defineProperty(taskWrapper, 'length', { value: fn.length });
   taskWrapper.unwrap = () => fn;
   taskWrapper.displayName = name;
+  taskWrapper.once = once;
 
   const meta = metadata.get(fn) || {};
   const nodes = [];
