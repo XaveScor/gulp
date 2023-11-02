@@ -10,6 +10,7 @@ const validateRegistry = require('./undertaker/validateRegistry');
 const assert = require('assert');
 const vfs = require('vinyl-fs');
 const { watch } = require('./watcher/index.cjs');
+const { declareTask } = require('./declare-task.cjs');
 
 class Gulp extends EventEmitter {
   Gulp = Gulp;
@@ -48,7 +49,7 @@ class Gulp extends EventEmitter {
     };
   };
 
-  task = (name, fn) => {
+  _task(name, fn) {
     if (typeof name === 'function') {
       fn = name;
       name = fn.displayName || fn.name;
@@ -59,7 +60,9 @@ class Gulp extends EventEmitter {
     }
 
     this._setTask(name, fn);
-  };
+  }
+
+  task = this._task.bind(this);
 
   series = (...args) => {
     const normalizedArgs = normalizeArgs(this._registry, args);
@@ -168,31 +171,7 @@ class Gulp extends EventEmitter {
     assert(typeof name === 'string', 'Task name must be a string');
     assert(typeof fn === 'function', 'Task function must be specified');
 
-    function taskWrapper(...args) {
-      return fn.apply(this, args);
-    }
-
-    Object.defineProperty(taskWrapper, 'length', { value: fn.length });
-    taskWrapper.unwrap = () => fn;
-    taskWrapper.displayName = name;
-
-    const meta = metadata.get(fn) || {};
-    const nodes = [];
-    if (meta.branch) {
-      nodes.push(meta.tree);
-    }
-
-    const task = this._registry.set(name, taskWrapper) || taskWrapper;
-
-    metadata.set(task, {
-      name: name,
-      orig: fn,
-      tree: {
-        label: name,
-        type: 'task',
-        nodes: nodes,
-      },
-    });
+    declareTask({ name, fn, registry: this._registry, once: false });
   }
 
   src = vfs.src.bind(this);

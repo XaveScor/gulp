@@ -1,6 +1,5 @@
-import { describe, test, expect, beforeEach } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 import { series } from '../series.mjs';
 
 function fnSync() {}
@@ -24,10 +23,6 @@ function fnError(done) {
 }
 
 describe('bach: series', function () {
-  beforeEach(() => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
   test('should can take the sync functions without return value', async () => {
     const [error, results] = await series([fnSync]);
 

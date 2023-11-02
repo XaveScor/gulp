@@ -1,6 +1,5 @@
-import { describe, beforeEach, expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 import { settleSeries } from '../settleSeries.mjs';
 
 function fn1(done) {
@@ -22,10 +21,6 @@ function fnError(done) {
 }
 
 describe('settleSeries', function () {
-  beforeEach(() => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
   test('should execute functions in series, passing settled results', async () => {
     const [errors, results] = await settleSeries([fn1, fn2, fn3]);
 

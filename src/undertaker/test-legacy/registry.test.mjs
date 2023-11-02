@@ -1,6 +1,4 @@
-import { promisify } from 'node:util';
-import { describe, expect, test, beforeEach } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+import { describe, expect, test } from 'vitest';
 
 const { default: DefaultRegistry } = await import('undertaker-registry');
 const { default: CommonRegistry } = await import('undertaker-common-tasks');
@@ -31,10 +29,6 @@ SetNoReturnRegistry.prototype.tasks = noop;
 function InvalidRegistry() {}
 
 describe('registry', function () {
-  beforeEach(() => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
   describe('method', function () {
     test('should return the current registry when no arguments are given', () => {
       const taker = new Gulp();

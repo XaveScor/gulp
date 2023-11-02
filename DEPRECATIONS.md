@@ -1,33 +1,53 @@
 # Jobo deprecations
 
-## Deprecation policy
+## Project Goals
 
-Our goals are make the stable and reliable API. We will try to avoid breaking changes as much as possible because We respect your time and money.
+Our primary objective is to maintain a stable and reliable API. We understand the importance of your time and investment, and we strive to minimize disruptive changes.
 
-But sometimes we need to make breaking changes to improve the API. We will try to make the breaking changes as less painful as possible.
+However, there may be instances where making breaking changes becomes necessary to enhance the API. In such cases, we are committed to making the transition as smooth as possible.
 
-We will follow the [Semantic Versioning](http://semver.org/) to make the breaking changes.
+To manage changes, we adhere to the principles of [Semantic Versioning](http://semver.org/). This ensures that you can anticipate and prepare for breaking modifications.
 
-Every deprecation have 3 stages:
+## Deprecation Process
 
-- **Deprecated** - We will show the deprecated warning in the console.
-- **Disabled** - We will disable the deprecated code. It will not work by default, but you can enable it by calling `setDeprecationFlags`
-- **Removed** - We will remove the deprecated code.
+Each deprecation within our project follows a structured four-stage process:
 
-We will try to keep the deprecated code for at least 2 major versions.
+- **1/4 Discussing** - In this stage, we plan to deprecate a particular feature, but it is open to discussion and potential rejection. We consolidate all deprecation-related information into a single file to facilitate easy access and discussion.
+- **2/4 Deprecated** - At this point, we begin displaying deprecation warnings in the console. You have the option to disable these warnings by using the `disableDeprecationWarnings` function. However, we recommend addressing the warnings rather than silencing them. You can also disable legacy behavior using the `disableBehavior` function.
+- **3/4 Disabled** - The deprecated code is disabled in this stage. By default, it will no longer function, but you can enable it by using the `disableBehavior` function.
+- **4/4 Removed** - In the final stage, we completely remove the deprecated code from the project.
 
-You always can disable the warnings by calling `disableWarnings`.
+Our commitment is to keep deprecated code available for at least two major versions to ease your transition.
 
+## How to control deprecations
+
+The Jobo has a built-in deprecation system that allows you to control the deprecation warnings and legacy behavior.
+
+All deprecations are located in the `deprecationFlagsEnum`. You can use the `disableDeprecationWarnings` function to disable deprecation warnings for a particular flag. Example:
+```javascript
+import { disableDeprecationWarnings, deprecationFlagsEnum } from '@xavescor/gulp';
+
+disableDeprecationWarnings([deprecationFlagsEnum.legacyTask]);
+```
+
+You can also use the `disableBehavior` function to disable or enable legacy behavior for a particular flag. Example:
+```javascript
+import { disableBehavior, deprecationFlagsEnum } from '@xavescor/gulp';
+
+disableBehavior({
+  [deprecationFlagsEnum.legacyTask]: true, // or false if you want to enable it
+});
+```
 
 ## Deprecations
 
-### Task must run only once
+### jobo.task
 
-Stage: **Deprecated**
+**Stage:** 2/4 Deprecated
 
-Deprecation flag: `taskRunsOnce`
+**Deprecation flag:** `legacyTask`
 
-Deprecation schedule:
+**Deprecation schedule:**
 
 | Stage      | Version |
 |------------|---------|
@@ -35,25 +55,45 @@ Deprecation schedule:
 | Disabled   | v6.0.0  |
 | Removed    | v7.0.0  |
 
+The `jobo.task` declaration, which uses `jobo.task(<name>, <task body>)`, is now deprecated due to the following reasons:
 
-The tasks must run only once even if they are called multiple times.
+- The task's signature is not extendable, making it impossible to add new parameters without breaking the API.
+- `jobo.task` executes the task body on every call, which negatively impacts performance by preventing result caching.
+- `jobo.task` can redeclare tasks if the name is duplicated, which hinders debugging.
+- `jobo.task` allows for a callback style, resulting in code that is hard to understand. It is recommended to use the async-await or promise style instead.
+- `jobo.task` also permits obtaining the function by calling `jobo.task(<name>)`, which is considered an excess feature. You can define pipelines using names instead of functions.
 
-```js
-async function task1() {
-}
+The new and improved way to declare tasks is to use `jobo.declareTask({name, fn})`, which addresses these issues.
 
-async function task2() {
-}
+#### Migration Path
 
-series(
-  task1,
-  parallel(
-    task1,
-    task2
-  )
-)
+To migrate, you can simply replace instances of `jobo.task` with `jobo.declareTask` in most cases.
+
+If you need to call the same task twice in the pipeline, create two identical tasks with different names.
+
+If you have tasks with the same name, please use different names to avoid conflicts.
+
+For callback style functions, you can replace them with the following code:
+
+```javascript
+new Promise((resolve, reject) => {
+  async_callback_function((error, result) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(result)
+    }
+  })
+})
 ```
+Alternatively, you can use require('util').promisify if applicable.
 
-In v5.1.2 this code will run `task1` twice. Starting from v5.2.0 it will run `task1` only once.
+If you pass functions to jobo.series or jobo.parallel, create a task for them. Here's an example:
+```javascript
+const task1 = jobo.declareTask({
+  name: 'task1',
+  fn,
+})
 
-Migration path:
+jobo.series(task1)
+```

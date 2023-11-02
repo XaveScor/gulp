@@ -1,6 +1,5 @@
 import { promisify } from 'node:util';
 import { describe, expect, test, beforeEach, vi } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags, setDeprecationFlags } from '../../deprecation.mjs';
 
 const { Gulp } = await import('../../gulp.cjs');
 
@@ -14,8 +13,6 @@ describe('task', function () {
   let taker;
 
   beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
     taker = new Gulp();
   });
 
@@ -90,7 +87,7 @@ describe('task', function () {
     expect(taker.task('foo').unwrap()).toEqual(taker.task('bar').unwrap());
   });
 
-  test('[Deprecated: RunTaskOnce]should allow using aliased tasks in composite tasks', async () => {
+  test('should allow using aliased tasks in composite tasks', async () => {
     const fn = vi.fn((done) => done());
 
     taker.task('foo', fn);
@@ -111,32 +108,7 @@ describe('task', function () {
     await promisify(taker.series(series, parallel))();
   });
 
-  test('should allow using aliased tasks in composite tasks', async () => {
-    setDeprecationFlags({
-      taskRunsOnce: true,
-    });
-
-    const fn = vi.fn((done) => done());
-
-    taker.task('foo', fn);
-    taker.task('bar', fn);
-
-    const series = taker.series('foo', 'bar', function (cb) {
-      expect(fn).toBeCalledTimes(2);
-      cb();
-    });
-
-    const parallel = taker.parallel('foo', 'bar', function (cb) {
-      setTimeout(function () {
-        expect(fn).toBeCalledTimes(2);
-        cb();
-      }, 500);
-    });
-
-    await promisify(taker.series(series, parallel))();
-  });
-
-  test('[Deprecated: RunTaskOnce]should allow composite tasks tasks to be aliased', async () => {
+  test('should allow composite tasks tasks to be aliased', async () => {
     const fn1 = vi.fn((done) => done());
     const fn2 = vi.fn((done) => done());
 
@@ -156,37 +128,6 @@ describe('task', function () {
       setTimeout(function () {
         expect(fn1).toBeCalledTimes(2);
         expect(fn2).toBeCalledTimes(2);
-        cb();
-      }, 500);
-    });
-
-    await promisify(taker.series(series, parallel))();
-  });
-
-  test('should allow composite tasks tasks to be aliased', async () => {
-    setDeprecationFlags({
-      taskRunsOnce: true,
-    });
-
-    const fn1 = vi.fn((done) => done());
-    const fn2 = vi.fn((done) => done());
-
-    taker.task('ser', taker.series(fn1, fn2));
-    taker.task('foo', taker.task('ser'));
-
-    taker.task('par', taker.parallel(fn1, fn2));
-    taker.task('bar', taker.task('par'));
-
-    const series = taker.series('foo', function (cb) {
-      expect(fn1).toBeCalledTimes(1);
-      expect(fn2).toBeCalledTimes(1);
-      cb();
-    });
-
-    const parallel = taker.series('bar', function (cb) {
-      setTimeout(function () {
-        expect(fn1).toBeCalledTimes(1);
-        expect(fn2).toBeCalledTimes(1);
         cb();
       }, 500);
     });

@@ -1,6 +1,5 @@
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 import { parallel } from '../parallel.mjs';
-import { describe, test, expect, beforeEach } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 function fn1(done) {
   done(null, 1);
@@ -21,10 +20,6 @@ function fnError(done) {
 }
 
 describe('bach: parallel', function () {
-  beforeEach(() => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
   test('should execute functions in parallel, passing results', async () => {
     const [error, results] = await parallel([fn1, fn2, fn3]);
 

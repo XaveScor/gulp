@@ -1,107 +1,103 @@
 import { promisify } from 'node:util';
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+import { describe, test, expect, afterEach, vi } from 'vitest';
+import jobo from '../../../index.js';
 
-const { Gulp } = await import('../../gulp.cjs');
-
-describe('lastRun', function () {
-  let taker, test1, test2, error, alias;
+describe('lastRun', () => {
   let defaultResolution = process.env.UNDERTAKER_TIME_RESOLUTION;
 
-  beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-
-    process.env.UNDERTAKER_TIME_RESOLUTION = '0';
-    taker = new Gulp();
-
-    test1 = function (cb) {
-      cb();
-    };
-    taker.task('test1', test1);
-
-    test2 = function (cb) {
-      cb();
-    };
-    test2.displayName = 'test2';
-    taker.task(test2);
-
-    error = function (cb) {
-      cb(new Error());
-    };
-    taker.task('error', error);
-
-    alias = test1;
-    taker.task('alias', alias);
-  });
-
-  afterEach(async () => {
+  afterEach(() => {
     process.env.UNDERTAKER_TIME_RESOLUTION = defaultResolution;
   });
 
   test('should only record time when task has completed', async () => {
     const ts = vi.fn();
-    const test = function (cb) {
-      ts(taker.lastRun('test'));
-      cb();
-    };
-    taker.task('test', test);
-    await promisify(taker.parallel('test'))();
+    const recordTimeTask = jobo.declareTask({
+      name: 'recordTimeTaskComplete',
+      fn: async () => {
+        ts(jobo.lastRun(recordTimeTask));
+      },
+    });
+    await promisify(jobo.parallel(recordTimeTask))();
 
     expect(ts).toBeCalledWith(undefined);
   });
 
   test('should record tasks time execution', async () => {
-    await promisify(taker.parallel('test1'))();
+    const executedTask = jobo.declareTask({
+      name: 'recordTaskExecuted',
+      fn: async () => {},
+    });
+    const notExecutedTask = jobo.declareTask({
+      name: 'recordTaskNotExecuted',
+      fn: async () => {},
+    });
 
-    expect(taker.lastRun('test1')).toBeTruthy();
-    expect(taker.lastRun('test1')).toBeLessThanOrEqual(Date.now());
-    expect(taker.lastRun(test2)).toBeFalsy();
-    expect(taker.lastRun(function () {})).toBeFalsy();
-    expect(taker.lastRun.bind(taker, 'notexists')).toThrow(Error);
+    await promisify(jobo.parallel(executedTask))();
+
+    expect(jobo.lastRun(executedTask)).toBeTruthy();
+    expect(jobo.lastRun(executedTask)).toBeLessThanOrEqual(Date.now());
+    expect(jobo.lastRun(notExecutedTask)).toBeFalsy();
+    expect(jobo.lastRun(function () {})).toBeFalsy();
+    expect(jobo.lastRun.bind(jobo, 'notexists')).toThrow(Error);
   });
 
   test('should record all tasks time execution', async () => {
-    await promisify(taker.parallel('test1', test2))();
+    const taskExecuted = jobo.declareTask({
+      name: 'recordAllTasksExecuted',
+      fn: async () => {},
+    });
+    const taskNotExecuted = jobo.declareTask({
+      name: 'recordAllTasksNotExecuted',
+      fn: async () => {},
+    });
+    await promisify(jobo.parallel(taskExecuted, taskNotExecuted))();
 
-    expect(taker.lastRun('test1')).toBeTruthy();
-    expect(taker.lastRun('test1')).toBeLessThanOrEqual(Date.now());
-    expect(taker.lastRun(test2)).toBeTruthy();
-    expect(taker.lastRun(test2)).toBeLessThanOrEqual(Date.now());
+    expect(jobo.lastRun(taskExecuted)).toBeTruthy();
+    expect(jobo.lastRun(taskExecuted)).toBeLessThanOrEqual(Date.now());
+    expect(jobo.lastRun(taskNotExecuted)).toBeTruthy();
+    expect(jobo.lastRun(taskNotExecuted)).toBeLessThanOrEqual(Date.now());
   });
 
   test('should record same tasks time execution for a string task and its original', async () => {
-    await promisify(taker.series(test2))();
+    const task = jobo.declareTask({
+      name: 'recordSameTasksExecuted',
+      fn: async () => {},
+    });
 
-    expect(taker.lastRun(test2)).toEqual(taker.lastRun('test2'));
-  });
+    await promisify(jobo.series(task))();
 
-  test('should record tasks time execution for an aliased task', async () => {
-    await promisify(taker.series('alias'));
-
-    expect(taker.lastRun('alias')).toEqual(taker.lastRun('test1'));
+    expect(jobo.lastRun(task)).toEqual(jobo.lastRun(task));
   });
 
   test('should give time with 1s resolution', async () => {
+    const task = jobo.declareTask({
+      name: 'recordTimeResolution',
+      fn: async () => {},
+    });
+
     const resolution = 1000; // 1s
     const since = Date.now();
     const expected = since - (since % resolution);
 
-    await promisify(taker.series('test1'))();
+    await promisify(jobo.series(task))();
 
-    expect(taker.lastRun('test1', resolution)).toEqual(expected);
+    expect(jobo.lastRun(task, resolution)).toEqual(expected);
   });
 
   test('should not record task start time on error', async () => {
-    taker.on('error', function () {
-      // To keep the test from catching the emitted errors
+    const task = jobo.declareTask({
+      name: 'recordTaskStartTimeOnError',
+      fn: async () => {
+        throw new Error();
+      },
     });
+
     try {
-      await promisify(taker.series('error'))();
+      await promisify(jobo.series(task))();
     } catch (err) {
       expect(err).toBeInstanceOf(Error);
     }
 
-    expect(taker.lastRun('error')).toBeFalsy();
+    expect(jobo.lastRun(task)).toBeFalsy();
   });
 });

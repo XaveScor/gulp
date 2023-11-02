@@ -27,6 +27,7 @@
     "gulp": "./bin/gulp.js"
   },
   "scripts": {
+    "foo": "gulp -T",
     "test": "vitest"
   },
   "dependencies": {

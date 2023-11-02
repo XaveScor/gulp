@@ -5,10 +5,12 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { describe, test, beforeEach, afterEach, expect, vi } from 'vitest';
-import vinyl from 'vinyl-fs';
-import jshint from 'gulp-jshint';
-import through from 'through2';
-import jobo from '../../../index.js';
+
+const { default: vinyl } = await import('vinyl-fs');
+const { default: jshint } = await import('gulp-jshint');
+const { default: through } = await import('through2');
+
+const { Gulp } = await import('../../gulp.cjs');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,55 +29,49 @@ function cleanup() {
 function noop() {}
 
 describe('undertaker: integrations', function () {
+  let taker;
+
+  beforeEach(async () => {
+    taker = new Gulp();
+  });
+
   beforeEach(cleanup);
   afterEach(cleanup);
 
   test('should handle vinyl streams', async () => {
-    const task = jobo.declareTask({
-      name: 'handle-vinyl-streams',
-      fn: () => {
-        return vinyl.src('./fixtures/test.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
-      },
+    taker.task('test', function () {
+      return vinyl.src('./fixtures/test.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
     });
 
-    await promisify(jobo.parallel(task))();
+    await promisify(taker.parallel('test'))();
   });
 
   test('should exhaust vinyl streams', async () => {
-    const task = jobo.declareTask({
-      name: 'exhaust-vinyl-streams',
-      fn: () => {
-        return vinyl.src('./fixtures/test.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
-      },
+    taker.task('test', function () {
+      return vinyl.src('./fixtures/test.js', { cwd: __dirname });
     });
 
-    await promisify(jobo.parallel(task))();
+    await promisify(taker.parallel('test'))();
   });
 
   test('should lints all piped files', async () => {
-    const task = jobo.declareTask({
-      name: 'lints-all-piped-files',
-      fn: () => {
-        return vinyl.src('./fixtures/test.js', { cwd: __dirname }).pipe(jshint());
-      },
+    taker.task('test', function () {
+      return vinyl.src('./fixtures/test.js', { cwd: __dirname }).pipe(jshint());
     });
 
-    await promisify(jobo.parallel(task))();
+    await promisify(taker.parallel('test'))();
   });
 
   test('should handle a child process return', async () => {
-    const task = jobo.declareTask({
-      name: 'handle-a-child-process-return',
-      fn: () => {
-        if (isWindows) {
-          return spawn('cmd', ['/c', 'dir']).on('error', noop);
-        }
+    taker.task('test', function () {
+      if (isWindows) {
+        return spawn('cmd', ['/c', 'dir']).on('error', noop);
+      }
 
-        return spawn('ls', ['-lh', __dirname]);
-      },
+      return spawn('ls', ['-lh', __dirname]);
     });
 
-    await promisify(jobo.parallel(task))();
+    await promisify(taker.parallel('test'))();
   });
 
   test(
@@ -92,11 +88,8 @@ describe('undertaker: integrations', function () {
       }
 
       // Some built
-      const buildTask = jobo.declareTask({
-        name: 'lastRun-build',
-        fn: () => {
-          return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
-        },
+      taker.task('build', function () {
+        return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname }).pipe(vinyl.dest('./fixtures/out', { cwd: __dirname }));
       });
 
       function userEdit(cb) {
@@ -104,7 +97,7 @@ describe('undertaker: integrations', function () {
       }
 
       function countEditedFiles() {
-        return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname, since: jobo.lastRun(buildTask) }).pipe(
+        return vinyl.src('./fixtures/tmp/*.js', { cwd: __dirname, since: taker.lastRun('build') }).pipe(
           through.obj(function (file, enc, cb) {
             fn();
             cb();
@@ -112,7 +105,7 @@ describe('undertaker: integrations', function () {
         );
       }
 
-      await promisify(jobo.series(setup, delay, buildTask, delay, userEdit, countEditedFiles))();
+      await promisify(taker.series(setup, delay, 'build', delay, userEdit, countEditedFiles))();
 
       expect(fn).toHaveBeenCalledOnce();
     },
