@@ -5,7 +5,6 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { describe, test, beforeEach, afterEach, expect, vi } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 
 const { default: vinyl } = await import('vinyl-fs');
 const { default: jshint } = await import('gulp-jshint');
@@ -33,8 +32,6 @@ describe('undertaker: integrations', function () {
   let taker;
 
   beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
     taker = new Gulp();
   });
 

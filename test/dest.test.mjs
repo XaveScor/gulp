@@ -1,7 +1,6 @@
 import fsP from 'node:fs/promises';
 import fs from 'node:fs';
 import { describe, expect, test, beforeEach, afterEach } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../src/deprecation.mjs';
 import os from 'node:os';
 
 const { default: gulp } = await import('../index.js');
@@ -9,8 +8,6 @@ const { default: gulp } = await import('../index.js');
 describe('gulp.dest()', function () {
   let tmpPath;
   beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
     tmpPath = await fsP.mkdtemp(os.tmpdir());
   });
   afterEach(async () => {

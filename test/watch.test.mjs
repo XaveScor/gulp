@@ -2,7 +2,6 @@ import fsP from 'node:fs/promises';
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, test, beforeEach, afterEach } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../src/deprecation.mjs';
 import os from 'node:os';
 
 const { default: gulp } = await import('../index.js');
@@ -22,8 +21,6 @@ function updateTempFile(path) {
 describe('gulp.watch()', function () {
   let outPath;
   beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
     outPath = await fsP.mkdtemp(os.tmpdir());
   });
   afterEach(async () => {

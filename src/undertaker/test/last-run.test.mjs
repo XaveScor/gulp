@@ -1,15 +1,9 @@
 import { promisify } from 'node:util';
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+import { describe, test, expect, afterEach, vi } from 'vitest';
 import jobo from '../../../index.js';
 
 describe('lastRun', () => {
   let defaultResolution = process.env.UNDERTAKER_TIME_RESOLUTION;
-
-  beforeEach(() => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
 
   afterEach(() => {
     process.env.UNDERTAKER_TIME_RESOLUTION = defaultResolution;

@@ -49,7 +49,7 @@ class Gulp extends EventEmitter {
     };
   };
 
-  task = (name, fn) => {
+  _task(name, fn) {
     if (typeof name === 'function') {
       fn = name;
       name = fn.displayName || fn.name;
@@ -60,7 +60,9 @@ class Gulp extends EventEmitter {
     }
 
     this._setTask(name, fn);
-  };
+  }
+
+  task = this._task.bind(this);
 
   series = (...args) => {
     const normalizedArgs = normalizeArgs(this._registry, args);

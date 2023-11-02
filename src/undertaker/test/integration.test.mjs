@@ -5,7 +5,6 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { describe, test, beforeEach, afterEach, expect, vi } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 import vinyl from 'vinyl-fs';
 import jshint from 'gulp-jshint';
 import through from 'through2';
@@ -28,11 +27,6 @@ function cleanup() {
 function noop() {}
 
 describe('undertaker: integrations', function () {
-  beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
-
   beforeEach(cleanup);
   afterEach(cleanup);
 

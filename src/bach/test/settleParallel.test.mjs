@@ -1,6 +1,5 @@
-import { describe, test, beforeEach, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 import { settleParallel } from '../settleParallel.mjs';
 
 function fn1(done) {
@@ -22,10 +21,6 @@ function fnError(done) {
 }
 
 describe('bach: settleParallel', function () {
-  beforeEach(() => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
   test('should execute functions in parallel, passing settled results', async () => {
     const [errors, results] = await settleParallel([fn1, fn2, fn3]);
 

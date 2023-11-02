@@ -13,11 +13,31 @@ To manage changes, we adhere to the principles of [Semantic Versioning](http://s
 Each deprecation within our project follows a structured four-stage process:
 
 - **1/4 Discussing** - In this stage, we plan to deprecate a particular feature, but it is open to discussion and potential rejection. We consolidate all deprecation-related information into a single file to facilitate easy access and discussion.
-- **2/4 Deprecated** - At this point, we begin displaying deprecation warnings in the console. You have the option to disable these warnings by using the `disableWarnings` function. However, we recommend addressing the warnings rather than silencing them. You can also disable legacy behavior using the `disableBehavior` function.
+- **2/4 Deprecated** - At this point, we begin displaying deprecation warnings in the console. You have the option to disable these warnings by using the `disableDeprecationWarnings` function. However, we recommend addressing the warnings rather than silencing them. You can also disable legacy behavior using the `disableBehavior` function.
 - **3/4 Disabled** - The deprecated code is disabled in this stage. By default, it will no longer function, but you can enable it by using the `disableBehavior` function.
 - **4/4 Removed** - In the final stage, we completely remove the deprecated code from the project.
 
 Our commitment is to keep deprecated code available for at least two major versions to ease your transition.
+
+## How to control deprecations
+
+The Jobo has a built-in deprecation system that allows you to control the deprecation warnings and legacy behavior.
+
+All deprecations are located in the `deprecationFlagsEnum`. You can use the `disableDeprecationWarnings` function to disable deprecation warnings for a particular flag. Example:
+```javascript
+import { disableDeprecationWarnings, deprecationFlagsEnum } from '@xavescor/gulp';
+
+disableDeprecationWarnings([deprecationFlagsEnum.legacyTask]);
+```
+
+You can also use the `disableBehavior` function to disable or enable legacy behavior for a particular flag. Example:
+```javascript
+import { disableBehavior, deprecationFlagsEnum } from '@xavescor/gulp';
+
+disableBehavior({
+  [deprecationFlagsEnum.legacyTask]: true, // or false if you want to enable it
+});
+```
 
 ## Deprecations
 
@@ -25,7 +45,7 @@ Our commitment is to keep deprecated code available for at least two major versi
 
 **Stage:** 2/4 Deprecated
 
-**Deprecation flag:** `legacy-task`
+**Deprecation flag:** `legacyTask`
 
 **Deprecation schedule:**
 

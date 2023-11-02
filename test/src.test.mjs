@@ -1,18 +1,12 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, test, beforeEach, vi } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../src/deprecation.mjs';
+import { describe, expect, test, vi } from 'vitest';
 
 const { default: gulp } = await import('../index.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('gulp.src()', function () {
-  beforeEach(() => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
-
   test('should return a stream', () => {
     const stream = gulp.src('./fixtures/*.coffee', { cwd: __dirname });
     expect(stream).toBeTruthy();

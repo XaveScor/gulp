@@ -1,6 +1,5 @@
 import { promisify } from 'node:util';
 import { describe, expect, test, beforeEach } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 
 const { Gulp } = await import('../../gulp.cjs');
 
@@ -26,8 +25,6 @@ describe('undertaker: parallel', function () {
   let taker;
 
   beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
     taker = new Gulp();
     taker.task('test1', fn1);
     taker.task('test2', fn2);

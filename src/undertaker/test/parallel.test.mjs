@@ -1,14 +1,8 @@
 import { promisify } from 'node:util';
 import { describe, expect, test, beforeEach } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 import jobo from '../../../index.js';
 
 describe('undertaker: parallel', () => {
-  beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
-
   test('should throw on non-valid tasks combined with valid tasks', () => {
     const validTask = jobo.declareTask({
       name: 'validTaskNonArray',

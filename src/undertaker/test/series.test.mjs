@@ -1,14 +1,8 @@
 import { promisify } from 'node:util';
-import { beforeEach, describe, expect, test } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
+import { describe, expect, test } from 'vitest';
 import jobo from '../../../index.js';
 
 describe('series', function () {
-  beforeEach(() => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
-
   test('should throw on non-valid tasks combined with valid tasks', () => {
     const task = jobo.declareTask({
       name: 'validTaskNonArray',

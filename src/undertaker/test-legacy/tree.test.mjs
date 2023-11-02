@@ -1,6 +1,4 @@
-import { promisify } from 'node:util';
 import { describe, expect, test, beforeEach } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 
 const { Gulp } = await import('../../gulp.cjs');
 const { default: simple } = await import('./fixtures/taskTree/simple.js');
@@ -18,8 +16,6 @@ describe('tree', function () {
   let taker;
 
   beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
     taker = new Gulp();
   });
 

@@ -1,6 +1,5 @@
 import { promisify } from 'node:util';
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 
 const { Gulp } = await import('../../gulp.cjs');
 
@@ -9,9 +8,6 @@ describe('lastRun', function () {
   let defaultResolution = process.env.UNDERTAKER_TIME_RESOLUTION;
 
   beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-
     process.env.UNDERTAKER_TIME_RESOLUTION = '0';
     taker = new Gulp();
 

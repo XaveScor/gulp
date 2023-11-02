@@ -1,6 +1,5 @@
 import { promisify } from 'node:util';
 import { describe, expect, test, beforeEach, vi } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../../deprecation.mjs';
 
 const { Gulp } = await import('../../gulp.cjs');
 
@@ -14,8 +13,6 @@ describe('task', function () {
   let taker;
 
   beforeEach(async () => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
     taker = new Gulp();
   });
 

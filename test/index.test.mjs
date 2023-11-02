@@ -1,17 +1,23 @@
-import { describe, test, beforeEach, expect } from 'vitest';
-import { disableDeprecationWarnings, resetDeprecationFlags } from '../src/deprecation.mjs';
+import { describe, test, expect } from 'vitest';
 
 const { default: jobo } = await import('../index.js');
 
 describe('jobo', function () {
-  beforeEach(() => {
-    disableDeprecationWarnings();
-    resetDeprecationFlags();
-  });
-
   describe('new features', () => {
-    test('setDeprecationFlags', () => {
-      expect(jobo.hasOwnProperty('setDeprecationFlags')).toEqual(true);
+    test('declareTask', () => {
+      expect(jobo.hasOwnProperty('declareTask')).toEqual(true);
+    });
+
+    test('disableBehavior', () => {
+      expect(jobo.hasOwnProperty('disableBehavior')).toEqual(true);
+    });
+
+    test('disableDeprecationWarnings', () => {
+      expect(jobo.hasOwnProperty('disableDeprecationWarnings')).toEqual(true);
+    });
+
+    test('deprecationFlagsEnum', () => {
+      expect(jobo.hasOwnProperty('deprecationFlagsEnum')).toEqual(true);
     });
   });
 
@@ -62,9 +68,24 @@ describe('jobo', function () {
   });
 
   describe('new features should not exist in prototype.gulp', () => {
-    test('setDeprecationFlags', () => {
+    test('declareTask', () => {
       const gulp = new jobo.Gulp();
-      expect(gulp.hasOwnProperty('setDeprecationFlags')).toEqual(false);
+      expect(gulp.hasOwnProperty('declareTask')).toEqual(false);
+    });
+
+    test('disableBehavior', () => {
+      const gulp = new jobo.Gulp();
+      expect(gulp.hasOwnProperty('disableBehavior')).toEqual(false);
+    });
+
+    test('disableDeprecationWarnings', () => {
+      const gulp = new jobo.Gulp();
+      expect(gulp.hasOwnProperty('disableDeprecationWarnings')).toEqual(false);
+    });
+
+    test('deprecationFlagsEnum', () => {
+      const gulp = new jobo.Gulp();
+      expect(gulp.hasOwnProperty('deprecationFlagsEnum')).toEqual(false);
     });
   });
 
@@ -111,7 +132,7 @@ describe('jobo', function () {
 
     test('lastRun', () => {
       const gulp = new jobo.Gulp();
-      expect(jobo.hasOwnProperty('lastRun')).toEqual(true);
+      expect(gulp.hasOwnProperty('lastRun')).toEqual(true);
     });
 
     test('registry', () => {
