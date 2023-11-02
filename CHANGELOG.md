@@ -3,6 +3,7 @@
 ## UNRELEASED
 
 - run each task more than once deprecated. Please, see [DEPRECATIONS.md](./DEPRECATIONS.md) for more details (#36)
+- `jobo.task` is deprecated. Please, see [DEPRECATIONS.md](./DEPRECATIONS.md) for more details (#50)
 
 ### Internal changes
 
